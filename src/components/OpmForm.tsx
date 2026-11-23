@@ -10,6 +10,8 @@ import { compressImage } from '../utils/imageCompress';
 import { generatePdfFromElement } from '../utils/pdfFromElement';
 import type { ProjectData } from '../types/evidence';
 import '../assets/style_Opm.css';
+import { useSharedProject } from '../utils/projectStore';
+import DistrictSelect from './DistrictSelect';
 
 interface OpmFormProps {
   /** 'LACT' atau 'BAUT' — dipakai untuk nama file yang diunduh */
@@ -40,7 +42,7 @@ export default function OpmForm({
   defaultTitleLine1,
   defaultTitleLine2,
 }: OpmFormProps) {
-  const [project, setProject] = useState<ProjectData>(emptyProject);
+  const [project, setProject] = useSharedProject(emptyProject);
   const [titleLine1, setTitleLine1] = useState(defaultTitleLine1);
   const [titleLine2, setTitleLine2] = useState(defaultTitleLine2);
 
@@ -225,11 +227,9 @@ export default function OpmForm({
           </label>
           <label>
             District
-            <input
-              type="text"
+            <DistrictSelect
               value={project.district}
-              onChange={(e) => handleProjectChange('district', e.target.value)}
-              placeholder="Ketik disini"
+              onChange={(v) => handleProjectChange('district', v)}
             />
           </label>
           <label>

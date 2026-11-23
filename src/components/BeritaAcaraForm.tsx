@@ -11,6 +11,8 @@ import ExportOptionsPanel, {
 } from './ExportOptions';
 import type { ProjectData } from '../types/evidence';
 import '../assets/style_BeritaAcara.css';
+import { useSharedProject } from '../utils/projectStore';
+import DistrictSelect from './DistrictSelect';
 
 interface BeritaAcaraFormProps {
   /** 'LACT' atau 'BAUT' — dipakai untuk nama file yang diunduh */
@@ -50,7 +52,7 @@ export default function BeritaAcaraForm({
   defaultDocHeading,
   defaultClosingText,
 }: BeritaAcaraFormProps) {
-  const [project, setProject] = useState<ProjectData>(emptyProject);
+  const [project, setProject] = useSharedProject(emptyProject);
   const [docHeading, setDocHeading] = useState(defaultDocHeading);
 
   const [tanggalISO, setTanggalISO] = useState('');
@@ -208,11 +210,9 @@ export default function BeritaAcaraForm({
           </label>
           <label>
             District
-            <input
-              type="text"
+            <DistrictSelect
               value={project.district}
-              onChange={(e) => handleProjectChange('district', e.target.value)}
-              placeholder="Ketik disini"
+              onChange={(v) => handleProjectChange('district', v)}
             />
           </label>
           <label>

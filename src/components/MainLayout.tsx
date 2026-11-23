@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import BundleBar from './BundleBar';
+import { isSectionSaved, useBundleVersion } from '../utils/pdfBundle';
 import '../assets/MainLayout.css';
+import '../assets/style_Bundle.css';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -11,7 +14,7 @@ interface MainLayoutProps {
 interface SubMenu {
   id: string;
   label: string;
-  mode: 'cover' | 'daftar-isi' | 'berita-acara' | 'boq' | `evidence${number}` | 'opm' | 'mancore' | 'kml' | 'compress'; // dibaca oleh halaman lewat ?mode=...
+  mode: 'cover' | 'daftar-isi' | 'berita-acara' | 'boq' | `evidence${number}` | 'opm' | 'otdr' | 'mancore' | 'kml' | 'compress'; // dibaca oleh halaman lewat ?mode=...
   href: string;
 }
 
@@ -49,6 +52,11 @@ const menus: MenuItem[] = [
       // data pengukuran OPM + blok tanda tangan), polanya sama seperti BOQ.
       // Lihat OpmForm.tsx / OpmPage.tsx, dirutekan dari Lact.tsx (mode 'opm').
       { id: 'lact-opm', label: 'Data Pengukuran OPM', mode: 'opm', href: '/lact?mode=opm' },
+      // Import OTDR: halaman tersendiri, polanya sama seperti Data Pengukuran OPM
+      // (kop + judul + tabel info + gambar hasil ukur + blok tanda tangan), tapi
+      // boleh banyak gambar (satu gambar = satu halaman).
+      // Lihat OtdrForm.tsx / OtdrPage.tsx, dirutekan dari Lact.tsx (mode 'otdr').
+      { id: 'lact-otdr', label: 'Import OTDR', mode: 'otdr', href: '/lact?mode=otdr' },
       // Halaman tersendiri juga, polanya sama seperti BOQ & Data Pengukuran
       // OPM. Lihat MancoreForm.tsx / MancorePage.tsx, dirutekan dari Lact.tsx
       // (mode 'mancore').
@@ -77,6 +85,8 @@ const menus: MenuItem[] = [
       })),
       // Sama seperti di Tools LACT: halaman tersendiri, lihat OpmForm.tsx.
       { id: 'baut-opm', label: 'Data Pengukuran OPM', mode: 'opm', href: '/baut?mode=opm' },
+      // Sama seperti di Tools LACT: halaman tersendiri, lihat OtdrForm.tsx.
+      { id: 'baut-otdr', label: 'Import OTDR', mode: 'otdr', href: '/baut?mode=otdr' },
       // Sama seperti di Tools LACT: halaman tersendiri, lihat MancoreForm.tsx.
       { id: 'baut-mancore', label: 'Lampiran Mancore', mode: 'mancore', href: '/baut?mode=mancore' },
       // Sama seperti di Tools LACT: halaman tersendiri, lihat KmlForm.tsx.
@@ -91,6 +101,21 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
   const [searchParams] = useSearchParams();
   const currentMode = searchParams.get('mode') ?? 'evidence1';
   const current = menus.find((m) => m.id === activeMenu);
+
+  // ----- Paket PDF Lengkap (lihat BundleBar.tsx & utils/pdfBundle.ts) -----
+  useBundleVersion(); // supaya tanda ✓ di sidebar ikut diperbarui saat isi paket berubah
+  const builder = menus.find((m) => m.id === activeMenu && m.children);
+  // Urutan bagian paket = urutan menu (Cover ... Lampiran KML), tanpa "Kompres Foto"
+  const bundleSections = (builder?.children ?? [])
+    .filter((c) => c.mode !== 'compress')
+    .map((c) => ({ id: c.id, label: c.label, mode: c.mode as string, href: c.href }));
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [hasPreview, setHasPreview] = useState(false);
+  // Bilah paket hanya muncul saat halaman PREVIEW tampil (ada elemen .pdf-page)
+  useEffect(() => {
+    const has = !!contentRef.current?.querySelector('.pdf-page');
+    setHasPreview((prev) => (prev === has ? prev : has));
+  });
 
   // Dropdown yang terbuka: otomatis membuka menu dari halaman yang sedang aktif
   const [openId, setOpenId] = useState<string | null>(activeMenu);
@@ -159,6 +184,13 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
                           onClick={() => navigate(c.href)}
                         >
                           {c.label}
+                          {c.mode !== 'compress' && isSectionSaved(m.id, c.mode) && (
+                            <span
+                              className="sub-menu-saved"
+                              title="Sudah tersimpan di Paket PDF"
+                              aria-label="Sudah tersimpan di Paket PDF"
+                            />
+                          )}
                         </div>
                       );
                     })}
@@ -176,7 +208,18 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
               <h2 className="feature-page-title">{pageTitle}</h2>
             </div>
           )}
-          <div className="feature-page-content">{children}</div>
+          <div className="feature-page-content" ref={contentRef}>
+            {children}
+            {builder && hasPreview && (
+              <BundleBar
+                builderId={builder.id}
+                docType={builder.id === 'lact-builder' ? 'LACT' : 'BAUT'}
+                currentMode={currentMode}
+                sections={bundleSections}
+                getRoot={() => contentRef.current}
+              />
+            )}
+          </div>
         </main>
       </div>
 

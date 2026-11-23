@@ -1,0 +1,226 @@
+/* ===== Dokumen dari Excel: BOQ, Data Pengukuran OPM, Lampiran Mancore ===== */
+/* Header (kop, judul, tabel info) memakai class yang SAMA dengan halaman lain
+   (style_Evidence.css). File ini hanya mengatur isi, blok tanda tangan, dan form impor. */
+
+.pdf-xdoc-page {
+  min-height: 1123px;
+}
+
+/* Bingkai isi: tabel Excel (atau gambar) di tengah halaman */
+.pdf-xdoc-frame {
+  width: 100%;
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.pdf-xdoc-frame .xdoc-table {
+  line-height: normal;
+}
+
+.pdf-xdoc-image {
+  display: block;
+  max-width: 100%;
+  max-height: 440px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Blok tanda tangan, rata kanan — sama polanya dengan halaman BOQ. */
+.pdf-xdoc-sign-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 48px;
+}
+
+.pdf-xdoc-sign-block {
+  width: 280px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.pdf-xdoc-sign-block p {
+  margin: 2px 0;
+}
+
+.pdf-xdoc-sign-space {
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px 0;
+}
+
+.pdf-xdoc-sign-space img {
+  max-height: 90px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.pdf-xdoc-sign-name {
+  text-decoration: underline;
+  font-weight: 400;
+}
+
+
+/* ===== Form: impor Excel ===== */
+
+.xdoc-source {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.xdoc-source-btn {
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid #d9dce2;
+  border-radius: 8px;
+  background: #fff;
+  color: #444;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.xdoc-source-btn.active {
+  background: #e30613;
+  border-color: #e30613;
+  color: #fff;
+}
+
+.xdoc-import {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.xdoc-file-input {
+  display: none;
+}
+
+.xdoc-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 120px;
+  padding: 14px;
+  border: 2px dashed #e30613;
+  border-radius: 10px;
+  background: #fff5f5;
+  color: #e30613;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.xdoc-dropzone:hover {
+  background: #ffeaea;
+}
+
+.xdoc-dropzone.busy {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.xdoc-dropzone-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.xdoc-dropzone-title {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.xdoc-dropzone-hint {
+  max-width: 520px;
+  font-size: 11px;
+  color: #a33;
+}
+
+.xdoc-image-preview {
+  max-width: 100%;
+  max-height: 260px;
+  object-fit: contain;
+}
+
+.xdoc-error {
+  padding: 10px 12px;
+  border-left: 3px solid #e30613;
+  border-radius: 8px;
+  background: #fff1f1;
+  color: #b8141b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.xdoc-sheets {
+  background: #f7f8fa;
+  border: 1px solid #e3e6eb;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.xdoc-sheets-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #555;
+}
+
+.xdoc-link-btn {
+  border: none;
+  background: none;
+  color: #b8141b;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.xdoc-sheet-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-top: 1px solid #eceef1;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.xdoc-sheet-name {
+  font-weight: 700;
+  color: #222;
+}
+
+.xdoc-sheet-meta {
+  margin-left: auto;
+  font-size: 11px;
+  color: #888;
+  text-align: right;
+}
+
+.xdoc-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.xdoc-hint {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: #888;
+  line-height: 1.5;
+}

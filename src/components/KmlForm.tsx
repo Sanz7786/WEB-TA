@@ -10,6 +10,8 @@ import { compressImage } from '../utils/imageCompress';
 import { generatePdfFromElement } from '../utils/pdfFromElement';
 import type { ProjectData } from '../types/evidence';
 import '../assets/style_Kml.css';
+import { useSharedProject } from '../utils/projectStore';
+import DistrictSelect from './DistrictSelect';
 
 interface KmlFormProps {
   /** 'LACT' atau 'BAUT' — dipakai untuk nama file yang diunduh */
@@ -32,7 +34,7 @@ const emptyProject: ProjectData = {
 };
 
 export default function KmlForm({ docTitle, pageTitle, activeMenu, defaultDocHeading }: KmlFormProps) {
-  const [project, setProject] = useState<ProjectData>(emptyProject);
+  const [project, setProject] = useSharedProject(emptyProject);
   const [docHeading, setDocHeading] = useState(defaultDocHeading);
 
   // Gambar screenshot Google Earth/KML, seperti pada halaman BOQ/OPM/Mancore.
@@ -175,11 +177,9 @@ export default function KmlForm({ docTitle, pageTitle, activeMenu, defaultDocHea
           </label>
           <label>
             District
-            <input
-              type="text"
+            <DistrictSelect
               value={project.district}
-              onChange={(e) => handleProjectChange('district', e.target.value)}
-              placeholder="Ketik disini"
+              onChange={(v) => handleProjectChange('district', v)}
             />
           </label>
           <label>

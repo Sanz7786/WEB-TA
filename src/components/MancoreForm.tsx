@@ -10,6 +10,8 @@ import { compressImage } from '../utils/imageCompress';
 import { generatePdfFromElement } from '../utils/pdfFromElement';
 import type { ProjectData } from '../types/evidence';
 import '../assets/style_Mancore.css';
+import { useSharedProject } from '../utils/projectStore';
+import DistrictSelect from './DistrictSelect';
 
 interface MancoreFormProps {
   /** 'LACT' atau 'BAUT' — dipakai untuk nama file yang diunduh */
@@ -32,7 +34,7 @@ const emptyProject: ProjectData = {
 };
 
 export default function MancoreForm({ docTitle, pageTitle, activeMenu, defaultDocHeading }: MancoreFormProps) {
-  const [project, setProject] = useState<ProjectData>(emptyProject);
+  const [project, setProject] = useSharedProject(emptyProject);
   const [docHeading, setDocHeading] = useState(defaultDocHeading);
 
   // Gambar tabel mancore (screenshot/scan dari Excel), seperti pada halaman BOQ & OPM.
@@ -205,11 +207,9 @@ export default function MancoreForm({ docTitle, pageTitle, activeMenu, defaultDo
           </label>
           <label>
             District
-            <input
-              type="text"
+            <DistrictSelect
               value={project.district}
-              onChange={(e) => handleProjectChange('district', e.target.value)}
-              placeholder="Ketik disini"
+              onChange={(v) => handleProjectChange('district', v)}
             />
           </label>
           <label>

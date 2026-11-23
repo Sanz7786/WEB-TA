@@ -3,10 +3,9 @@ import EvidenceForm from '../components/EvidenceForm';
 import CoverForm from '../components/CoverForm';
 import DaftarIsiForm from '../components/DaftarIsiForm';
 import BeritaAcaraForm from '../components/BeritaAcaraForm';
-import BoqForm from '../components/BoqForm';
-import OpmForm from '../components/OpmForm';
-import MancoreForm from '../components/MancoreForm';
+import OtdrForm from '../components/OtdrForm';
 import KmlForm from '../components/KmlForm';
+import ExcelDocForm from '../components/ExcelDocForm';
 
 export default function Lact() {
   const [searchParams] = useSearchParams();
@@ -60,22 +59,38 @@ export default function Lact() {
 
   if (mode === 'boq') {
     return (
-      <BoqForm
+      <ExcelDocForm
+        kind="boq"
         docTitle="LACT"
         pageTitle="Buat LACT — BOQ"
         activeMenu="lact-builder"
-        defaultDocHeading="BILL OF QUANTITY COMMISIONING TEST"
+        defaultTitleLine1="BILL OF QUANTITY COMMISIONING TEST"
+        defaultShowSign
       />
     );
   }
 
   if (mode === 'opm') {
     return (
-      <OpmForm
+      <ExcelDocForm
+        kind="opm"
         docTitle="LACT"
         pageTitle="Buat LACT — Data Pengukuran OPM"
         activeMenu="lact-builder"
         defaultTitleLine1="LAMPIRAN DATA PENGUKURAN OPM"
+        defaultTitleLine2="PROJECT OUTSIDE PLANT FIBER OPTIC"
+        defaultShowSign={false}
+      />
+    );
+  }
+
+  if (mode === 'otdr') {
+    return (
+      <OtdrForm
+        docTitle="LACT"
+        pageTitle="Buat LACT — Import OTDR"
+        activeMenu="lact-builder"
+        defaultTitleLine1="LAMPIRAN HASIL UKUR OTDR"
         defaultTitleLine2="PROJECT OUTSIDE PLANT FIBER OPTIC"
       />
     );
@@ -83,11 +98,13 @@ export default function Lact() {
 
   if (mode === 'mancore') {
     return (
-      <MancoreForm
+      <ExcelDocForm
+        kind="mancore"
         docTitle="LACT"
         pageTitle="Buat LACT — Lampiran Mancore"
         activeMenu="lact-builder"
-        defaultDocHeading="LAMPIRAN MANCORE"
+        defaultTitleLine1="LAMPIRAN MANCORE"
+        defaultShowSign={false}
       />
     );
   }

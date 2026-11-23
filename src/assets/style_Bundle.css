@@ -1,0 +1,397 @@
+/* ===== Paket PDF Lengkap (bilah di bawah preview + penanda "tersimpan" di sidebar) ===== */
+
+.bundle-bar {
+  margin: 24px auto 8px;
+  width: 100%;
+  max-width: 794px; /* selebar halaman preview */
+  box-sizing: border-box;
+  padding: 20px 22px 16px;
+  background: #fff;
+  border: 1px solid #eceef1;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(20, 20, 40, 0.08), 0 1px 3px rgba(20, 20, 40, 0.06);
+  font-size: 13px;
+  color: #2b2b33;
+}
+
+/* ---------- Kepala panel ---------- */
+.bundle-bar-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bundle-bar-icon {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: linear-gradient(135deg, var(--ta-red, #e30613), var(--ta-red-dark, #b8141b));
+  box-shadow: 0 4px 10px rgba(227, 6, 19, 0.3);
+}
+
+.bundle-bar-heading {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.bundle-bar-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: #1c1c24;
+}
+
+.bundle-bar-subtitle {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #7a7a86;
+}
+
+.bundle-bar-count {
+  flex: 0 0 auto;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fff1f1;
+  color: #b8141b;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.bundle-bar-hint {
+  margin: 14px 0 14px;
+  color: #6b6b76;
+  line-height: 1.55;
+  font-size: 12px;
+}
+
+/* ---------- Daftar bagian yang sudah tersimpan ---------- */
+.bundle-bar-saved {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  padding: 12px;
+  background: #f7f8fa;
+  border: 1px dashed #dfe2e8;
+  border-radius: 12px;
+}
+
+.bundle-bar-empty {
+  color: #8a8a96;
+  font-style: italic;
+}
+
+.bundle-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 4px 4px 10px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #e3e6eb;
+  box-shadow: 0 1px 2px rgba(20, 20, 40, 0.05);
+  font-size: 12px;
+  color: #2b2b33;
+}
+
+.bundle-chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3ddc84, #1a9e4b);
+  box-shadow: 0 0 0 3px rgba(26, 158, 75, 0.16);
+}
+
+.bundle-chip-label {
+  font-weight: 600;
+}
+
+.bundle-chip-pages {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #f0f1f4;
+  color: #6b6b76;
+  font-size: 11px;
+}
+
+.bundle-chip-remove {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #8a8a96;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.bundle-chip-remove:hover:not(:disabled) {
+  background: #e30613;
+  color: #fff;
+}
+
+.bundle-chip-remove:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Pengaturan: nama file + kualitas ---------- */
+.bundle-bar-settings {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 200px;
+  gap: 14px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+
+.bundle-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.bundle-field-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #3a3a44;
+}
+
+.bundle-field-help {
+  font-size: 11px;
+  color: #8a8a96;
+  word-break: break-all;
+}
+
+.bundle-input-wrap {
+  display: flex;
+  align-items: stretch;
+  height: 40px;
+  border: 1px solid #d9dce2;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.bundle-input-wrap:focus-within {
+  border-color: var(--ta-red, #e30613);
+  box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.12);
+}
+
+.bundle-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: none;
+  outline: none;
+  padding: 0 12px;
+  font-size: 13px;
+  background: transparent;
+  color: #1c1c24;
+}
+
+.bundle-input::placeholder {
+  color: #a6a6b0;
+}
+
+.bundle-input:disabled {
+  background: #f4f5f7;
+}
+
+.bundle-input-suffix {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: #f3f4f7;
+  border-left: 1px solid #e3e6eb;
+  color: #6b6b76;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bundle-select {
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid #d9dce2;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 13px;
+  color: #1c1c24;
+  cursor: pointer;
+}
+
+.bundle-select:focus {
+  outline: none;
+  border-color: var(--ta-red, #e30613);
+  box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.12);
+}
+
+/* ---------- Tombol ---------- */
+.bundle-bar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid #eef0f3;
+}
+
+.bundle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.15s, background 0.15s, filter 0.15s;
+}
+
+.bundle-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.bundle-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Tombol utama (merah) */
+.bundle-btn-primary {
+  color: #fff;
+  background: linear-gradient(135deg, var(--ta-red, #e30613), var(--ta-red-dark, #b8141b));
+  box-shadow: 0 3px 10px rgba(227, 6, 19, 0.3);
+}
+
+.bundle-btn-primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+  box-shadow: 0 5px 14px rgba(227, 6, 19, 0.38);
+}
+
+/* Tombol kedua (garis merah) */
+.bundle-btn-secondary {
+  color: var(--ta-red, #e30613);
+  background: #fff;
+  border-color: var(--ta-red, #e30613);
+}
+
+.bundle-btn-secondary:hover:not(:disabled) {
+  background: #fff3f3;
+}
+
+/* Tombol netral (abu-abu) */
+.bundle-btn-neutral {
+  color: #2b2b33;
+  background: #f3f4f7;
+  border-color: #e1e4ea;
+}
+
+.bundle-btn-neutral:hover:not(:disabled) {
+  background: #eaecf1;
+}
+
+/* Tombol bahaya halus, didorong ke kanan */
+.bundle-btn-ghost {
+  margin-left: auto;
+  padding: 0 12px;
+  color: #b8141b;
+  background: transparent;
+}
+
+.bundle-btn-ghost:hover:not(:disabled) {
+  background: #fff0f0;
+}
+
+/* ---------- Status & info ---------- */
+.bundle-bar-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-weight: 600;
+  color: #b8141b;
+}
+
+.bundle-bar-status::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #f4b8bb;
+  border-top-color: var(--ta-red, #e30613);
+  border-radius: 50%;
+  animation: bundle-spin 0.8s linear infinite;
+}
+
+@keyframes bundle-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.bundle-bar-info {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-left: 3px solid #1a9e4b;
+  border-radius: 8px;
+  background: #effaf3;
+  color: #137a3a;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.bundle-bar-note {
+  margin: 14px 0 0;
+  font-size: 11px;
+  color: #9a9aa6;
+}
+
+@media (max-width: 640px) {
+  .bundle-bar-settings {
+    grid-template-columns: 1fr;
+  }
+  .bundle-btn-ghost {
+    margin-left: 0;
+  }
+}
+
+/* ---------- Penanda "sudah tersimpan" di sidebar (pengganti tanda ✓) ---------- */
+.sub-menu-saved {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding-left: 10px;
+}
+
+.sub-menu-saved::before {
+  content: '';
+  display: block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3ddc84, #1a9e4b);
+  box-shadow: 0 0 0 3px rgba(26, 158, 75, 0.18);
+}
+
+/* Di menu yang sedang aktif (latar merah) penandanya jadi putih supaya tetap terlihat */
+.sub-menu-item.active .sub-menu-saved::before {
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
+}

@@ -13,6 +13,8 @@ import { compressImage, formatBytes, MAX_ORIGINAL_BYTES, MAX_ORIGINAL_MB } from 
 import { generatePdfFromElement } from '../utils/pdfFromElement';
 import type { ProjectData, EvidenceItem } from '../types/evidence';
 import '../assets/style_Evidence.css';
+import { useSharedProject } from '../utils/projectStore';
+import DistrictSelect from './DistrictSelect';
 
 interface EvidenceFormProps {
   docTitle: string;
@@ -89,7 +91,7 @@ export default function EvidenceForm({
     ? 'compress'
     : EVIDENCE_SLOTS[0];
 
-  const [project, setProject] = useState<ProjectData>(emptyProject);
+  const [project, setProject] = useSharedProject(emptyProject);
   const [docHeading, setDocHeading] = useState('LAMPIRAN EVIDENT PEKERJAAN');
 
   // Keranjang TERPISAH untuk Lampiran Evidence 1-12
@@ -383,11 +385,9 @@ export default function EvidenceForm({
           </label>
           <label>
             District
-            <input
-              type="text"
+            <DistrictSelect
               value={project.district}
-              onChange={(e) => handleProjectChange('district', e.target.value)}
-              placeholder="Ketik disini"
+              onChange={(v) => handleProjectChange('district', v)}
             />
           </label>
           <label>

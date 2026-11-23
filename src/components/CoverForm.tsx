@@ -9,6 +9,8 @@ import { QUALITY_PRESETS, buildPdfFileName } from './ExportOptions';
 import { generatePdfFromElement } from '../utils/pdfFromElement';
 import type { ProjectData } from '../types/evidence';
 import '../assets/style_Cover.css';
+import { useSharedProject } from '../utils/projectStore';
+import DistrictSelect from './DistrictSelect';
 
 interface CoverFormProps {
   /** 'LACT' atau 'BAUT' — dipakai untuk nama file yang diunduh */
@@ -37,7 +39,7 @@ export default function CoverForm({
   defaultTitleLine1,
   defaultTitleLine2,
 }: CoverFormProps) {
-  const [project, setProject] = useState<ProjectData>(emptyProject);
+  const [project, setProject] = useSharedProject(emptyProject);
   const [titleLine1, setTitleLine1] = useState(defaultTitleLine1);
   const [titleLine2, setTitleLine2] = useState(defaultTitleLine2);
   const [partyLine1, setPartyLine1] = useState('PT. TELKOM INFRASTRUKTUR INDONESIA, Tbk.');
@@ -169,11 +171,9 @@ export default function CoverForm({
           </label>
           <label>
             District
-            <input
-              type="text"
+            <DistrictSelect
               value={project.district}
-              onChange={(e) => handleProjectChange('district', e.target.value)}
-              placeholder="Ketik disini"
+              onChange={(v) => handleProjectChange('district', v)}
             />
           </label>
           <label>

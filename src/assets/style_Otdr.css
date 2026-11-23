@@ -1,0 +1,188 @@
+/* ===== Halaman Import OTDR (LACT & BAUT) ===== */
+/* Kita hanya menyediakan HEADER (kop, judul, tabel info proyek) memakai class yang
+   SAMA dengan halaman Evidence (.pdf-header/.pdf-title/.pdf-info-table dari
+   style_Evidence.css). Seluruh isi di bawahnya adalah hasil OTDR yang diimpor. */
+
+.pdf-otdr-page {
+  min-height: 1123px;
+}
+
+/* Bingkai isi hasil OTDR: tanpa garis tepi (laporan dari aplikasi OTDR sudah
+   punya garisnya sendiri), rata atas, dan setinggi sisa halaman setelah header.
+   object-fit: contain menjaga rasio asli, tidak gepeng atau ketarik. */
+.pdf-otdr-image-frame {
+  width: 100%;
+  height: 700px;
+  margin-top: 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: hidden;
+  background: #fff;
+}
+
+.pdf-otdr-image-frame img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.pdf-otdr-image-placeholder {
+  align-self: center;
+  font-size: 12px;
+  color: #999;
+}
+
+/* ===== Form: kotak upload & daftar gambar hasil ukur OTDR ===== */
+
+.otdr-upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 220px;
+  border: 2px dashed #bbb;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #888;
+  background: #fafafa;
+  overflow: hidden;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.otdr-upload-box:hover {
+  border-color: #e30613;
+  color: #e30613;
+}
+
+.otdr-upload-box {
+  min-height: 130px;
+  padding: 12px;
+  text-align: center;
+}
+
+.otdr-upload-box.dragging {
+  border-color: #e30613;
+  background: #fff1f1;
+  color: #e30613;
+}
+
+.otdr-upload-box.busy {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.otdr-upload-hint {
+  font-size: 11px;
+  color: #999;
+  max-width: 460px;
+}
+
+/* Daftar gambar yang sudah diunggah */
+.otdr-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  font-size: 13px;
+  color: #555;
+}
+
+.otdr-clear {
+  background: #eee;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.otdr-clear:hover {
+  background: #e0e0e0;
+}
+
+.otdr-thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.otdr-thumb {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e3e6eb;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.otdr-thumb-number {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 1;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e30613;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.otdr-thumb img {
+  display: block;
+  width: 100%;
+  height: 160px;
+  object-fit: contain;
+  object-position: top center;
+  background: #f4f5f7;
+  border-radius: 6px;
+}
+
+.otdr-thumb-name {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.otdr-thumb-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.otdr-thumb-btn {
+  flex: 1;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background: #f1f2f5;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.otdr-thumb-btn:hover:not(:disabled) {
+  background: #e3e5ea;
+}
+
+.otdr-thumb-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.otdr-thumb-btn.remove:hover:not(:disabled) {
+  background: #e30613;
+  color: #fff;
+}
