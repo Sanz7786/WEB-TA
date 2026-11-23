@@ -91,7 +91,6 @@ export default function Lact() {
         pageTitle="Buat LACT — Import OTDR"
         activeMenu="lact-builder"
         defaultTitleLine1="LAMPIRAN HASIL UKUR OTDR"
-        defaultTitleLine2="PROJECT OUTSIDE PLANT FIBER OPTIC"
       />
     );
   }

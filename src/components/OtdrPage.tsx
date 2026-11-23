@@ -8,7 +8,6 @@ interface OtdrPageProps {
   showLogos: boolean;
   logoSize: LogoSize;
   titleLine1: string; // mis. "LAMPIRAN HASIL UKUR OTDR"
-  titleLine2: string; // mis. "PROJECT OUTSIDE PLANT FIBER OPTIC"
   project: ProjectData;
   /** Id unik halaman ini. Dipakai sebagai data-evidence-id supaya foto yang diimpor bisa diganti ke versi ASLI saat export. */
   imageId: string;
@@ -30,7 +29,6 @@ export default function OtdrPage({
   showLogos,
   logoSize,
   titleLine1,
-  titleLine2,
   project,
   imageId,
   imageDataUrl,
@@ -42,11 +40,7 @@ export default function OtdrPage({
     <div className="pdf-page pdf-otdr-page">
       <PdfHeader showLogos={showLogos} logoSize={logoSize} />
 
-      <h1 className="pdf-title">
-        {titleLine1}
-        <br />
-        {titleLine2}
-      </h1>
+      <h1 className="pdf-title">{titleLine1}</h1>
 
       <div className="pdf-info-table">
         <div className="pdf-info-row">

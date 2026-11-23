@@ -21,10 +21,8 @@ interface OtdrFormProps {
   pageTitle: string;
   /** 'lact-builder' atau 'baut-builder' — supaya sidebar menyorot menu yang benar */
   activeMenu: string;
-  /** Baris 1 judul di kop halaman PDF, mis. "LAMPIRAN HASIL UKUR OTDR" */
+  /** Judul di kop halaman PDF (satu baris), mis. "LAMPIRAN HASIL UKUR OTDR" */
   defaultTitleLine1: string;
-  /** Baris 2 judul di kop halaman PDF, mis. "PROJECT OUTSIDE PLANT FIBER OPTIC" */
-  defaultTitleLine2: string;
 }
 
 const emptyProject: ProjectData = {
@@ -57,11 +55,9 @@ export default function OtdrForm({
   pageTitle,
   activeMenu,
   defaultTitleLine1,
-  defaultTitleLine2,
 }: OtdrFormProps) {
   const [project, setProject] = useSharedProject(emptyProject);
   const [titleLine1, setTitleLine1] = useState(defaultTitleLine1);
-  const [titleLine2, setTitleLine2] = useState(defaultTitleLine2);
 
   const [items, setItems] = useState<OtdrItem[]>([]);
   const [loading, setLoading] = useState<string | null>(null);
@@ -155,7 +151,7 @@ export default function OtdrForm({
   };
 
   const handlePreview = () => {
-    if (titleLine1.trim() === '' || titleLine2.trim() === '') {
+    if (titleLine1.trim() === '') {
       alert('Mohon isi judul dokumen terlebih dahulu.');
       return;
     }
@@ -217,7 +213,6 @@ export default function OtdrForm({
                 showLogos={exportOpts.showLogos}
                 logoSize={exportOpts.logoSize}
                 titleLine1={titleLine1}
-                titleLine2={titleLine2}
                 project={project}
                 imageId={`otdr-image-${it.id}`}
                 imageDataUrl={it.preview}
@@ -238,21 +233,12 @@ export default function OtdrForm({
       <div className="evidence-form">
         <div className="evidence-form-fields">
           <label>
-            Judul Dokumen — Baris 1
+            Judul Dokumen
             <input
               type="text"
               value={titleLine1}
               onChange={(e) => setTitleLine1(e.target.value)}
               placeholder="Contoh: LAMPIRAN HASIL UKUR OTDR"
-            />
-          </label>
-          <label>
-            Judul Dokumen — Baris 2
-            <input
-              type="text"
-              value={titleLine2}
-              onChange={(e) => setTitleLine2(e.target.value)}
-              placeholder="Contoh: PROJECT OUTSIDE PLANT FIBER OPTIC"
             />
           </label>
         </div>

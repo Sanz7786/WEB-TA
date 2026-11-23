@@ -90,7 +90,6 @@ export default function BuatBaut() {
         pageTitle="Buat BAUT — Import OTDR"
         activeMenu="baut-builder"
         defaultTitleLine1="LAMPIRAN HASIL UKUR OTDR"
-        defaultTitleLine2="PROJECT OUTSIDE PLANT FIBER OPTIC"
       />
     );
   }
