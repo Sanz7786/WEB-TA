@@ -60,6 +60,7 @@ export default function Lact() {
   if (mode === 'boq') {
     return (
       <ExcelDocForm
+        key="boq"
         kind="boq"
         docTitle="LACT"
         pageTitle="Buat LACT — BOQ"
@@ -73,6 +74,7 @@ export default function Lact() {
   if (mode === 'opm') {
     return (
       <ExcelDocForm
+        key="opm"
         kind="opm"
         docTitle="LACT"
         pageTitle="Buat LACT — Data Pengukuran OPM"
@@ -98,6 +100,7 @@ export default function Lact() {
   if (mode === 'mancore') {
     return (
       <ExcelDocForm
+        key="mancore"
         kind="mancore"
         docTitle="LACT"
         pageTitle="Buat LACT — Lampiran Mancore"

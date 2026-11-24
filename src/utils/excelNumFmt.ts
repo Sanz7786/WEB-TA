@@ -177,7 +177,12 @@ function renderNumber(toks: Tok[], value: number, negAsAbs: boolean): string {
     if (minInt === 0 && ip === '0') ip = '';
     if (thousands) ip = ip.replace(/\B(?=(\d{3})+(?!\d))/g, LOCALE.thousands);
     core = ip + (fp ? LOCALE.decimal + fp : '');
-    if (!core) core = '0';
+    if (!core) {
+      // Placeholder "?" tanpa angka = spasi selebar angka (mis. format akuntansi _(* "-"??_) untuk nol -> "-").
+      // Sebelumnya selalu dipaksa jadi "0" sehingga tampil "-0".
+      const spaces = intPart.filter((t) => t.k === 'digit' && t.v === '?').length;
+      core = spaces > 0 ? '\u2007'.repeat(spaces) : '0';
+    }
   }
 
   const render = (list: Tok[]) =>

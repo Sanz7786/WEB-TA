@@ -59,6 +59,7 @@ export default function BuatBaut() {
   if (mode === 'boq') {
     return (
       <ExcelDocForm
+        key="boq"
         kind="boq"
         docTitle="BAUT"
         pageTitle="Buat BAUT — BOQ"
@@ -72,6 +73,7 @@ export default function BuatBaut() {
   if (mode === 'opm') {
     return (
       <ExcelDocForm
+        key="opm"
         kind="opm"
         docTitle="BAUT"
         pageTitle="Buat BAUT — Data Pengukuran OPM"
@@ -97,6 +99,7 @@ export default function BuatBaut() {
   if (mode === 'mancore') {
     return (
       <ExcelDocForm
+        key="mancore"
         kind="mancore"
         docTitle="BAUT"
         pageTitle="Buat BAUT — Lampiran Mancore"

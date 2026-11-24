@@ -65,7 +65,9 @@ const emptyProject: ProjectData = {
   pelaksana: '',
 };
 
-// Ukuran halaman A4 pada 96 dpi (794 x 1123 px). Lebar isi = 794 dikurangi margin kiri-kanan.
+// Ukuran halaman A4 pada 96 dpi (794 x 1123 px). Lebar TABEL = 794 dikurangi 40px di tiap sisi.
+// Sengaja lebih lebar dari kotak teks halaman (602px, margin Word 96px): tabel Excel itu lebar,
+// jadi dibiarkan menjorok ke margin secara SIMETRIS di tengah halaman (lihat style_ExcelDoc.css).
 const CONTENT_WIDTH = 714;
 // Tinggi yang tersedia untuk isi (tabel) di bawah header, tergantung judul 1 atau 2 baris
 const FRAME_HEIGHT_TWO_LINE = 690;

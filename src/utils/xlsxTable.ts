@@ -247,6 +247,26 @@ export function paginateTable(table: SheetTable, zoom: number, capacityPx: numbe
   );
 
   const h = (i: number) => table.rows[i].heightPx * zoom;
+
+  // Satu "grup" = deretan baris yang terikat sel gabungan (mis. 8 baris core milik satu ODP).
+  // Grup tidak boleh dipotong, jadi muat-tidaknya dihitung dari TINGGI SELURUH GRUP, bukan baris pertamanya
+  // saja. Kalau tidak, grup yang baris pertamanya masih muat tapi seluruhnya tidak akan "menyangkut" di
+  // halaman itu dan membuat halaman melebihi A4.
+  const groupEnd = (start: number): number => {
+    let end = start;
+    for (let k = start; k <= end && k < n; k++) {
+      table.rows[k].cells.forEach((cell) => {
+        if (cell && cell.rowSpan > 1) end = Math.max(end, Math.min(n - 1, k + cell.rowSpan - 1));
+      });
+    }
+    return end;
+  };
+  const groupCost = (start: number): number => {
+    let sum = 0;
+    for (let k = start; k <= groupEnd(start); k++) sum += h(k);
+    return sum;
+  };
+
   const rep = table.repeatRows;
   const repIdx = rep ? Array.from({ length: rep[1] - rep[0] + 1 }, (_, k) => rep[0] + k) : [];
   const repH = repIdx.reduce((a, i) => a + h(i), 0);
@@ -258,7 +278,7 @@ export function paginateTable(table: SheetTable, zoom: number, capacityPx: numbe
     const cost = h(i);
     const isRepeated = pages.length > 0 && repIdx.includes(i);
     if (isRepeated) continue; // sudah ditambahkan sebagai judul berulang
-    if (cur.length > 0 && used + cost > capacityPx && !blocked[i]) {
+    if (cur.length > 0 && !blocked[i] && used + groupCost(i) > capacityPx) {
       pages.push(cur);
       cur = pages.length > 0 && repIdx.length && i > repIdx[repIdx.length - 1] ? [...repIdx] : [];
       used = cur.length ? repH : 0;

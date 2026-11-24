@@ -17,6 +17,12 @@
 
 .pdf-xdoc-frame .xdoc-table {
   line-height: normal;
+  /* Tabel dibuat selebar CONTENT_WIDTH (714px, lihat ExcelDocForm.tsx) — lebih lebar dari kotak isi
+     halaman (794 - 2x96 = 602px) supaya huruf tabel tidak terlalu kecil. Tanpa flex-shrink:0, flexbox
+     menyusutkan pembungkusnya jadi 602px dan tabel menempel di kiri lalu meluber ke kanan melewati
+     tepi kertas. Dengan 0 + justify-content:center, kelebihan lebarnya terbagi SAMA ke kiri & kanan
+     (sisa 40px dari tepi kertas di tiap sisi), jadi tabel selalu di tengah dan tidak terpotong. */
+  flex: 0 0 auto;
 }
 
 .pdf-xdoc-image {
