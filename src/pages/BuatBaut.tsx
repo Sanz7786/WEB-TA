@@ -6,10 +6,54 @@ import BeritaAcaraForm from '../components/BeritaAcaraForm';
 import OtdrForm from '../components/OtdrForm';
 import KmlForm from '../components/KmlForm';
 import ExcelDocForm from '../components/ExcelDocForm';
+import PdfImportForm from '../components/PdfImportForm';
 
 export default function BuatBaut() {
   const [searchParams] = useSearchParams();
   const mode = searchParams.get('mode');
+
+  // Tiga menu KHUSUS BAUT (tidak ada di LACT): NDE (setelah Cover), BA Tambah Kurang
+  // (setelah BOQ), dan BA ABD (setelah Lampiran KML). Ketiganya import file PDF jadi
+  // dan memakai satu komponen yang sama; `key` wajib berbeda supaya halaman yang sudah
+  // diimpor di satu menu tidak ikut muncul di menu lain.
+  if (mode === 'nde') {
+    return (
+      <PdfImportForm
+        key="nde"
+        docTitle="BAUT"
+        pageTitle="Buat BAUT — NDE"
+        activeMenu="baut-builder"
+        sectionLabel="NDE"
+        fileTag="NDE"
+      />
+    );
+  }
+
+  if (mode === 'ba-tambah-kurang') {
+    return (
+      <PdfImportForm
+        key="ba-tambah-kurang"
+        docTitle="BAUT"
+        pageTitle="Buat BAUT — BA Tambah Kurang"
+        activeMenu="baut-builder"
+        sectionLabel="BA Tambah Kurang"
+        fileTag="BA_Tambah_Kurang"
+      />
+    );
+  }
+
+  if (mode === 'ba-abd') {
+    return (
+      <PdfImportForm
+        key="ba-abd"
+        docTitle="BAUT"
+        pageTitle="Buat BAUT — BA ABD"
+        activeMenu="baut-builder"
+        sectionLabel="BA ABD"
+        fileTag="BA_ABD"
+      />
+    );
+  }
 
   // Menu "Cover", "Daftar Isi", "Berita Acara Uji Terima", dan "BOQ"
   // (empat submenu pertama Tools BAUT) memakai form & halaman tersendiri,

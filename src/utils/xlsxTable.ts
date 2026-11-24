@@ -156,7 +156,7 @@ export function buildSheetTable(sheet: SheetModel): SheetTable | null {
     const idxs = rowsKept.map((r, i) => (r >= a && r <= b ? i : -1)).filter((i) => i >= 0);
     if (idxs.length) repeatRows = [idxs[0], idxs[idxs.length - 1]];
   }
-  if (!repeatRows) repeatRows = detectHeaderRows(rows);
+  if (!repeatRows) repeatRows = detectHeaderRows(rows) ?? detectHeaderByContent(rows);
 
   dedupeBorders(rows);
 
@@ -227,6 +227,100 @@ function detectHeaderRows(rows: TableRow[]): [number, number] | null {
   let end = start;
   while (end + 1 < limit && end - start < 4 && isHeaderLike(rows[end + 1])) end++;
   return [start, end];
+}
+
+/**
+ * Cadangan kalau judul tabel TIDAK berwarna (mis. form OPM: hanya sebagian sel judul yang kuning):
+ * deretan baris teks bergaris (minimal 3 sel berteks, tidak ada angka) yang langsung disusul baris
+ * data bernomor (minimal 3 sel angka). Syarat "disusul baris angka" mencegah salah mengira
+ * tabel yang isinya teks semua sebagai judul.
+ */
+function detectHeaderByContent(rows: TableRow[]): [number, number] | null {
+  const limit = Math.min(rows.length, 15);
+  const live = (row: TableRow) => row.cells.filter((c): c is TableCell => !!c);
+  const isTextHeader = (row: TableRow) => {
+    const withText = live(row).filter((c) => c.text.trim() !== '');
+    return withText.length >= 3 && withText.every((c) => !c.isNumber) && withText.filter((c) => hasBorder(c.style)).length >= 3;
+  };
+  const isDataRow = (row: TableRow) => live(row).filter((c) => c.isNumber).length >= 3;
+
+  let start = -1;
+  for (let i = 0; i < limit; i++) {
+    if (isTextHeader(rows[i])) {
+      start = i;
+      break;
+    }
+  }
+  if (start < 0) return null;
+  let end = start;
+  while (end + 1 < limit && end - start < 4 && isTextHeader(rows[end + 1])) end++;
+  return end + 1 < rows.length && isDataRow(rows[end + 1]) ? [start, end] : null;
+}
+
+// ======================= Blok info proyek bawaan Excel =======================
+
+const INFO_LABEL = /^(OPERATION WAVE LENGTH|PROYEK|KONTRAK|SURAT PESANAN|DISTRICT|LOKASI|PELAKSANA)\b/i;
+
+/**
+ * Form OPM dari Excel memuat blok info di atas tabel (OPERATION WAVE LENGTH, PROYEK, KONTRAK, SURAT
+ * PESANAN, DISTRICT, LOKASI, PELAKSANA). Isinya sama dengan kop dokumen (judul + info proyek) yang sudah
+ * dibuat aplikasi, jadi di PDF tampil dobel. Fungsi ini membuang blok itu (beserta satu baris kosong
+ * pemisah di bawahnya) dan menyisakan tabel mulai dari judul kolom. Kalau blok tidak dikenali
+ * (kurang dari 4 baris berlabel, tidak berurutan, atau ada sel gabungan yang melintasinya), tabel
+ * dikembalikan apa adanya.
+ */
+export function dropProjectInfoRows(table: SheetTable): SheetTable {
+  const rows = table.rows;
+  const limit = Math.min(rows.length, 20);
+  const isInfo = (i: number) => rows[i].cells.some((c) => c && INFO_LABEL.test(c.text.trim()));
+  const isBlank = (i: number) => rows[i].cells.every((c) => !c || (c.text.trim() === '' && c.rowSpan === 1));
+
+  let first = -1;
+  let last = -1;
+  let count = 0;
+  for (let i = 0; i < limit; i++) {
+    if (!isInfo(i)) continue;
+    if (first < 0) first = i;
+    last = i;
+    count++;
+  }
+  if (first < 0 || count < 4 || last - first + 1 !== count) return table;
+
+  let end = last;
+  if (end + 1 < rows.length && isBlank(end + 1)) end++;
+  if (end + 1 >= rows.length) return table;
+
+  // sel gabungan tidak boleh melintasi batas yang dibuang
+  for (let i = 0; i < rows.length; i++) {
+    for (const c of rows[i].cells) {
+      if (!c || c.rowSpan <= 1) continue;
+      const to = i + c.rowSpan - 1;
+      if ((i < first && to >= first) || (i >= first && i <= end && to > end)) return table;
+    }
+  }
+
+  const removed = end - first + 1;
+  const kept = [...rows.slice(0, first), ...rows.slice(end + 1)];
+
+  // garis bawah baris terakhir yang dibuang jadi garis atas baris berikutnya (kalau belum punya)
+  const lastRemoved = rows[end];
+  const nextIdx = first; // indeks baris (setelah pangkas) yang tadinya rows[end + 1]
+  kept[nextIdx] = {
+    ...kept[nextIdx],
+    cells: kept[nextIdx].cells.map((c, j) => {
+      const prev = lastRemoved.cells[j];
+      return c && !c.style.top && prev?.style.bottom ? { ...c, style: { ...c.style, top: prev.style.bottom } } : c;
+    }),
+  };
+
+  let repeatRows = table.repeatRows;
+  if (repeatRows) {
+    if (repeatRows[0] > end) repeatRows = [repeatRows[0] - removed, repeatRows[1] - removed];
+    else if (repeatRows[1] >= first) repeatRows = null;
+  }
+  if (!repeatRows) repeatRows = detectHeaderRows(kept) ?? detectHeaderByContent(kept);
+
+  return { ...table, rows: kept, totalHeight: kept.reduce((a, r) => a + r.heightPx, 0), repeatRows };
 }
 
 // ======================= Pemecahan halaman =======================

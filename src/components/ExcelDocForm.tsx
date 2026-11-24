@@ -11,7 +11,7 @@ import { QUALITY_PRESETS, buildPdfFileName } from './ExportOptions';
 import { compressImage, formatBytes, MAX_ORIGINAL_BYTES, MAX_ORIGINAL_MB } from '../utils/imageCompress';
 import { generatePdfFromElement } from '../utils/pdfFromElement';
 import { readXlsx, type WorkbookModel } from '../utils/xlsxReader';
-import { buildSheetTable, paginateTable, type SheetTable } from '../utils/xlsxTable';
+import { buildSheetTable, dropProjectInfoRows, paginateTable, type SheetTable } from '../utils/xlsxTable';
 import type { ProjectData } from '../types/evidence';
 import '../assets/style_ExcelDoc.css';
 import { useSharedProject } from '../utils/projectStore';
@@ -100,6 +100,8 @@ export default function ExcelDocForm({
   const [importError, setImportError] = useState('');
   const [image, setImage] = useState<{ file: File; preview: string } | null>(null);
 
+  // Khusus OPM: blok info proyek di dalam Excel (OPERATION WAVE LENGTH, PROYEK, dst.) sudah ada di kop dokumen
+  const [showExcelInfo, setShowExcelInfo] = useState(false);
   const [showSign, setShowSign] = useState(defaultShowSign);
   const [tanggalISO, setTanggalISO] = useState('');
   const [nama, setNama] = useState('');
@@ -120,9 +122,12 @@ export default function ExcelDocForm({
   // ---------- Tabel dari tiap sheet (dihitung sekali per file) ----------
   const tables = useMemo(() => {
     const map = new Map<string, SheetTable | null>();
-    workbook?.sheets.forEach((s) => map.set(s.name, buildSheetTable(s)));
+    workbook?.sheets.forEach((s) => {
+      const t = buildSheetTable(s);
+      map.set(s.name, t && kind === 'opm' && !showExcelInfo ? dropProjectInfoRows(t) : t);
+    });
     return map;
-  }, [workbook]);
+  }, [workbook, kind, showExcelInfo]);
 
   const sheetInfos: SheetInfo[] = useMemo(
     () =>
@@ -421,6 +426,19 @@ export default function ExcelDocForm({
               />
               <p className="xdoc-hint">{info.imageLabel}</p>
             </div>
+          )}
+          {kind === 'opm' && source === 'excel' && workbook && (
+            <>
+              <label className="xdoc-check" style={{ marginTop: 8 }}>
+                <input type="checkbox" checked={showExcelInfo} onChange={(e) => setShowExcelInfo(e.target.checked)} />
+                Tampilkan blok info proyek dari Excel (OPERATION WAVE LENGTH, PROYEK, KONTRAK, dst.)
+              </label>
+              {!showExcelInfo && (
+                <p className="xdoc-hint">
+                  Dimatikan karena info proyek sudah ada di kop dokumen (di atas tabel), jadi tidak tampil dobel. Tabel dimulai dari judul kolom.
+                </p>
+              )}
+            </>
           )}
           {totalPages > 0 && <p className="xdoc-hint">Hasil: {totalPages} halaman.</p>}
         </div>

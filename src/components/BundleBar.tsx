@@ -152,9 +152,9 @@ export default function BundleBar({ builderId, docType, currentMode, sections, g
       </div>
 
       <p className="bundle-bar-hint">
-        Tombol unduh di atas tetap mengunduh bagian ini saja. Untuk satu file utuh (Cover sampai Lampiran
-        KML), simpan tiap bagian ke paket lalu gabungkan. Bagian yang tidak diperlukan boleh dilewati lewat
-        menu di samping.
+        Tombol unduh di atas tetap mengunduh bagian ini saja. Untuk satu file utuh ({sections[0].label} sampai{' '}
+        {sections[sections.length - 1].label}), simpan tiap bagian ke paket lalu gabungkan. Bagian yang tidak
+        diperlukan boleh dilewati lewat menu di samping.
       </p>
 
       <div className="bundle-bar-saved">

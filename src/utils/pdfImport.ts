@@ -93,13 +93,33 @@ export function trimWhiteMargins(canvas: HTMLCanvasElement): HTMLCanvasElement {
 }
 
 /**
- * Render semua halaman sebuah PDF jadi gambar PNG (data URL), margin putihnya
- * sudah dipotong. `onProgress(selesai, total)` dipanggil tiap halaman selesai.
+ * Pengaturan tambahan untuk renderPdfToImages. Semua opsional; kalau tidak diisi,
+ * hasilnya SAMA seperti sebelumnya (dipakai Import OTDR): margin dipotong, PNG.
+ */
+export interface RenderPdfOptions {
+  /** Potong margin putih di sekeliling isi. Default true (Import OTDR). Isi false untuk dokumen utuh (NDE, BA, dst.). */
+  trim?: boolean;
+  /** Ketajaman render, 1 = 72 dpi. Default RENDER_SCALE. */
+  scale?: number;
+  /** Format gambar hasil. 'jpeg' jauh lebih ringan untuk halaman penuh; default 'png'. */
+  format?: 'png' | 'jpeg';
+  /** Kualitas JPEG 0-1 (hanya untuk format 'jpeg'). Default 0.92. */
+  jpegQuality?: number;
+  /** Batas sisi terpanjang gambar (piksel), supaya halaman berukuran raksasa tidak menghabiskan memori. Default: tanpa batas. */
+  maxSide?: number;
+}
+
+/**
+ * Render semua halaman sebuah PDF jadi gambar (data URL). Secara bawaan: PNG
+ * dengan margin putih dipotong. `onProgress(selesai, total)` dipanggil tiap
+ * halaman selesai.
  */
 export async function renderPdfToImages(
   file: File,
-  onProgress?: (done: number, total: number) => void
+  onProgress?: (done: number, total: number) => void,
+  options: RenderPdfOptions = {}
 ): Promise<string[]> {
+  const { trim = true, scale = RENDER_SCALE, format = 'png', jpegQuality = 0.92, maxSide } = options;
   const data = new Uint8Array(await file.arrayBuffer());
   const loadingTask = pdfjsLib.getDocument({ data });
   const pdf = await loadingTask.promise;
@@ -107,7 +127,13 @@ export async function renderPdfToImages(
   try {
     for (let n = 1; n <= pdf.numPages; n++) {
       const page = await pdf.getPage(n);
-      const viewport = page.getViewport({ scale: RENDER_SCALE });
+
+      let pageScale = scale;
+      if (maxSide) {
+        const base = page.getViewport({ scale: 1 });
+        pageScale = Math.min(scale, maxSide / Math.max(base.width, base.height));
+      }
+      const viewport = page.getViewport({ scale: pageScale });
 
       const canvas = document.createElement('canvas');
       canvas.width = Math.ceil(viewport.width);
@@ -118,7 +144,8 @@ export async function renderPdfToImages(
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       await page.render({ canvas, viewport }).promise;
-      images.push(trimWhiteMargins(canvas).toDataURL('image/png'));
+      const out = trim ? trimWhiteMargins(canvas) : canvas;
+      images.push(format === 'jpeg' ? out.toDataURL('image/jpeg', jpegQuality) : out.toDataURL('image/png'));
       page.cleanup();
       onProgress?.(n, pdf.numPages);
     }

@@ -14,7 +14,7 @@ interface MainLayoutProps {
 interface SubMenu {
   id: string;
   label: string;
-  mode: 'cover' | 'daftar-isi' | 'berita-acara' | 'boq' | `evidence${number}` | 'opm' | 'otdr' | 'mancore' | 'kml' | 'compress'; // dibaca oleh halaman lewat ?mode=...
+  mode: 'cover' | 'daftar-isi' | 'berita-acara' | 'boq' | `evidence${number}` | 'opm' | 'otdr' | 'mancore' | 'kml' | 'compress' | 'nde' | 'ba-tambah-kurang' | 'ba-abd'; // dibaca oleh halaman lewat ?mode=...
   href: string;
 }
 
@@ -74,9 +74,15 @@ const menus: MenuItem[] = [
     icon: 'images/audit.png',
     children: [
       { id: 'baut-cover', label: 'Cover', mode: 'cover', href: '/baut?mode=cover' },
+      // KHUSUS BAUT (tidak ada di Tools LACT): import file PDF jadi, dimasukkan apa adanya.
+      // Posisi di daftar ini = urutan di Paket PDF Lengkap. Lihat PdfImportForm.tsx,
+      // dirutekan dari BuatBaut.tsx (mode 'nde').
+      { id: 'baut-nde', label: 'NDE', mode: 'nde', href: '/baut?mode=nde' },
       { id: 'baut-daftar-isi', label: 'Daftar Isi', mode: 'daftar-isi', href: '/baut?mode=daftar-isi' },
       { id: 'baut-berita-acara', label: 'Berita Acara Uji Terima', mode: 'berita-acara', href: '/baut?mode=berita-acara' },
       { id: 'baut-boq', label: 'BOQ', mode: 'boq', href: '/baut?mode=boq' },
+      // KHUSUS BAUT: import PDF, tepat setelah BOQ (mode 'ba-tambah-kurang').
+      { id: 'baut-ba-tambah-kurang', label: 'BA Tambah Kurang', mode: 'ba-tambah-kurang', href: '/baut?mode=ba-tambah-kurang' },
       ...Array.from({ length: 12 }, (_, i) => ({
         id: `baut-evidence-${i + 1}`,
         label: `Lampiran Evidence ${i + 1}`,
@@ -91,6 +97,8 @@ const menus: MenuItem[] = [
       { id: 'baut-mancore', label: 'Lampiran Mancore', mode: 'mancore', href: '/baut?mode=mancore' },
       // Sama seperti di Tools LACT: halaman tersendiri, lihat KmlForm.tsx.
       { id: 'baut-kml', label: 'Lampiran KML', mode: 'kml', href: '/baut?mode=kml' },
+      // KHUSUS BAUT: import PDF, tepat setelah Lampiran KML (mode 'ba-abd').
+      { id: 'baut-ba-abd', label: 'BA ABD', mode: 'ba-abd', href: '/baut?mode=ba-abd' },
       { id: 'baut-compress', label: 'Kompres Foto', mode: 'compress', href: '/baut?mode=compress' },
     ],
   },
