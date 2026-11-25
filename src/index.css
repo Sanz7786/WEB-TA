@@ -314,3 +314,277 @@ select:focus {
 .layout-body .scroll-top-btn.visible:active {
   transform: translateY(0) scale(0.96);
 }
+
+/* =========================================================
+   WELCOME PAGE — LINEAR LIGHT STYLE
+   ========================================================= */
+.lw-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 20px 36px;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+/* Grid tipis yang memudar di tepi */
+.lw-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(15, 23, 42, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.045) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 40%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 40%, #000 35%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ambient spotlight merah sangat tipis di belakang hero */
+.lw-bg-glow {
+  position: absolute;
+  top: -110px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 680px;
+  height: 360px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(238, 28, 37, 0.12) 0%,
+    rgba(238, 28, 37, 0.03) 45%,
+    transparent 72%
+  );
+  filter: blur(24px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lw-hero {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 680px;
+}
+
+/* Status pill badge */
+.lw-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(15, 23, 42, 0.09);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  letter-spacing: -0.01em;
+  margin-bottom: 20px;
+}
+
+.lw-pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ta-red, #e3000b);
+  box-shadow: 0 0 0 3px rgba(227, 0, 11, 0.16);
+}
+
+.lw-logo-wrap {
+  margin-bottom: 14px;
+}
+
+.lw-logo {
+  height: 62px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Tipografi tajam khas Linear */
+.lw-title {
+  margin: 0 0 14px;
+  font-size: 38px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: #0f172a;
+}
+
+.lw-title-accent {
+  background: linear-gradient(90deg, #0f172a 0%, #e3000b 55%, #b80009 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lw-desc {
+  margin: 0 0 26px;
+  max-width: 560px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: #475569;
+}
+
+/* Tombol CTA */
+.lw-cta-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 36px;
+}
+
+.lw-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.lw-btn-primary {
+  border: 1px solid transparent;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--ta-red, #e3000b), var(--ta-red-dark, #b80009));
+  box-shadow: 0 6px 18px -4px rgba(227, 0, 11, 0.42);
+}
+
+.lw-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -4px rgba(227, 0, 11, 0.5);
+}
+
+.lw-btn-primary .lw-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.lw-btn-primary:hover .lw-arrow {
+  transform: translateX(3px);
+}
+
+.lw-btn-secondary {
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.lw-btn-secondary:hover {
+  transform: translateY(-2px);
+  border-color: rgba(227, 0, 11, 0.35);
+  color: var(--ta-red, #e3000b);
+  background: #ffffff;
+  box-shadow: 0 6px 16px -4px rgba(15, 23, 42, 0.08);
+}
+
+/* 3 Kartu pintasan bergaya hairline card Linear */
+.lw-cards {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 820px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.lw-card {
+  text-align: left;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(15, 23, 42, 0.09);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease;
+}
+
+.lw-card:hover {
+  transform: translateY(-4px);
+  background: #ffffff;
+  border-color: rgba(227, 0, 11, 0.35);
+  box-shadow: 0 14px 28px -10px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(227, 0, 11, 0.12);
+}
+
+.lw-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.lw-card-badge {
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: #fff1f2;
+  color: var(--ta-red, #e3000b);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.lw-card-arrow {
+  font-size: 14px;
+  color: #94a3b8;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.lw-card:hover .lw-card-arrow {
+  color: var(--ta-red, #e3000b);
+  transform: translate(2px, -2px);
+}
+
+.lw-card-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.015em;
+}
+
+.lw-card-desc {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: #64748b;
+}
+
+/* Animasi masuk Blur-to-Sharp bertahap khas Linear */
+.lw-reveal {
+  opacity: 0;
+  animation: lw-blur-reveal 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.lw-d1 { animation-delay: 0.04s; }
+.lw-d2 { animation-delay: 0.11s; }
+.lw-d3 { animation-delay: 0.18s; }
+.lw-d4 { animation-delay: 0.25s; }
+.lw-d5 { animation-delay: 0.32s; }
+.lw-d6 { animation-delay: 0.40s; }
+
+@keyframes lw-blur-reveal {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
