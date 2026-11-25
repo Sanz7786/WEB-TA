@@ -117,6 +117,7 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
   const bundleSections = (builder?.children ?? [])
     .filter((c) => c.mode !== 'compress')
     .map((c) => ({ id: c.id, label: c.label, mode: c.mode as string, href: c.href }));
+  const contentRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
