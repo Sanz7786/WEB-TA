@@ -117,7 +117,24 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
   const bundleSections = (builder?.children ?? [])
     .filter((c) => c.mode !== 'compress')
     .map((c) => ({ id: c.id, label: c.label, mode: c.mode as string, href: c.href }));
-  const contentRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const handleMainScroll = () => {
+    const el = mainRef.current;
+    if (!el) return;
+    setShowScrollTop(el.scrollTop > 220);
+  };
+
+  const scrollToTop = () => {
+    mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Kembalikan scroll ke atas otomatis saat pindah menu/mode
+  useEffect(() => {
+    mainRef.current?.scrollTo({ top: 0 });
+    setShowScrollTop(false);
+  }, [activeMenu, currentMode]);
   const [hasPreview, setHasPreview] = useState(false);
   // Bilah paket hanya muncul saat halaman PREVIEW tampil (ada elemen .pdf-page)
   useEffect(() => {
@@ -209,7 +226,11 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
           </nav>
         </aside>
 
-        <main className="layout-content">
+        <main
+          className="layout-content"
+          ref={mainRef}
+          onScroll={handleMainScroll}
+        >
           {activeMenu !== 'welcome' && (
             <div className="feature-page-header">
               {current && <img src={asset(current.icon)} alt="" className="feature-page-icon" />}
@@ -231,6 +252,16 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
             )}
           </div>
         </main>
+
+        <button
+          type="button"
+          className={`scroll-top-btn ${showScrollTop ? 'visible' : ''}`}
+          onClick={scrollToTop}
+          title="Kembali ke atas"
+          aria-label="Kembali ke atas"
+        >
+          ↑
+        </button>
       </div>
 
       <footer className="layout-footer">
