@@ -100,36 +100,65 @@ body,
 
 .prog-animate { animation: prog-anim 2s ease-out forwards; }
 
-@layer base {
-  button:not(:disabled) {
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.18s ease, box-shadow 0.2s ease;
-  }
+/* =========================================================
+   1. HOVER SHINE (Tombol & Menu Sidebar)
+   ========================================================= */
+.nav-item,
+.sub-menu-item,
+button:not(:disabled) {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s ease, background-color 0.2s ease, color 0.2s ease;
+}
 
-  button:not(:disabled)::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -120%;
-    width: 60%;
-    height: 100%;
-    background: linear-gradient(
-      110deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.35) 50%,
-      transparent 100%
-    );
-    transform: skewX(-20deg);
-    pointer-events: none;
-  }
+/* Kilauan default (untuk tombol berwarna solid & .nav-item.active) */
+.nav-item::after,
+.sub-menu-item::after,
+button:not(:disabled)::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
 
-  button:not(:disabled):hover::after {
-    left: 140%;
-    transition: left 0.55s ease;
-  }
+/* Penyesuaian khusus menu berlatar putih/transparan agar kilauan terlihat */
+.sub-menu-item:hover,
+.nav-item:not(.active):hover {
+  background-color: var(--red-light); /* #fff1f2 */
+  color: var(--red); /* #e3000b */
+}
 
-  button:not(:disabled):active {
-    transform: scale(0.97);
-  }
+.sub-menu-item::after,
+.nav-item:not(.active)::after {
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(227, 0, 11, 0.16) 50%,
+    transparent 100%
+  );
+}
+
+/* Trigger animasi kilauan saat hover */
+.nav-item:hover::after,
+.sub-menu-item:hover::after,
+button:not(:disabled):hover::after {
+  left: 140%;
+  transition: left 0.55s ease;
+}
+
+/* Efek tekan ringan saat diklik */
+.nav-item:active,
+.sub-menu-item:active,
+button:not(:disabled):active {
+  transform: scale(0.97);
 }
