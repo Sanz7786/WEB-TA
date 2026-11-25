@@ -133,7 +133,7 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
 
   // Kembalikan scroll ke atas otomatis saat pindah menu/mode
   useEffect(() => {
-    mainRef.current?.scrollTo({ top: 0 });
+    mainRef.current?.scrollTo({ top: 0, behavior: 'instant' });
     setShowScrollTop(false);
   }, [activeMenu, currentMode]);
   const [hasPreview, setHasPreview] = useState(false);
