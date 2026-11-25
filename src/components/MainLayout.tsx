@@ -216,8 +216,10 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
               <h2 className="feature-page-title">{pageTitle}</h2>
             </div>
           )}
-          <div className="feature-page-content" ref={contentRef}>
-            {children}
+         <div className="feature-page-content" ref={contentRef}>
+            <div key={`${activeMenu}-${currentMode}`} className="page-enter">
+              {children}
+            </div>
             {builder && hasPreview && (
               <BundleBar
                 builderId={builder.id}
