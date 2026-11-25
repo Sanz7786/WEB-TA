@@ -101,17 +101,17 @@ body,
 .prog-animate { animation: prog-anim 2s ease-out forwards; }
 
 /* =========================================================
-   1. HOVER SHINE (Tombol & Menu Sidebar)
+   1. HOVER CARD + SHINE (Tombol & Menu Sidebar)
    ========================================================= */
 .nav-item,
 .sub-menu-item,
 button:not(:disabled) {
   position: relative;
   overflow: hidden;
-  transition: transform 0.18s ease, background-color 0.2s ease, color 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Kilauan default (untuk tombol berwarna solid & .nav-item.active) */
+/* Kilauan default (untuk tombol solid & menu aktif) */
 .nav-item::after,
 .sub-menu-item::after,
 button:not(:disabled)::after {
@@ -131,14 +131,16 @@ button:not(:disabled)::after {
   pointer-events: none;
 }
 
-/* Penyesuaian khusus menu berlatar putih/transparan agar kilauan terlihat */
-.sub-menu-item:hover,
+/* Hover Card untuk menu TIDAK aktif (latar terang, teks merah) */
+.sub-menu-item:not(.active):hover,
 .nav-item:not(.active):hover {
   background-color: var(--red-light); /* #fff1f2 */
   color: var(--red); /* #e3000b */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px -2px rgba(15, 23, 42, 0.08);
 }
 
-.sub-menu-item::after,
+.sub-menu-item:not(.active)::after,
 .nav-item:not(.active)::after {
   background: linear-gradient(
     110deg,
@@ -148,7 +150,15 @@ button:not(:disabled)::after {
   );
 }
 
-/* Trigger animasi kilauan saat hover */
+/* Hover Card untuk menu AKTIF (latar tetap merah, teks tetap putih tegas) */
+.sub-menu-item.active:hover,
+.nav-item.active:hover {
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px -3px rgba(227, 0, 11, 0.38);
+}
+
+/* Trigger kilauan saat hover */
 .nav-item:hover::after,
 .sub-menu-item:hover::after,
 button:not(:disabled):hover::after {
@@ -156,9 +166,40 @@ button:not(:disabled):hover::after {
   transition: left 0.55s ease;
 }
 
-/* Efek tekan ringan saat diklik */
+/* Efek tekan saat diklik */
 .nav-item:active,
 .sub-menu-item:active,
 button:not(:disabled):active {
-  transform: scale(0.97);
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
+}
+
+/* =========================================================
+   2. SKELETON SHIMMER (Loading Placeholder)
+   ========================================================= */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #e2e8f0; /* slate-200 */
+  border-radius: var(--radius-sm);
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    transparent 100%
+  );
+  animation: skeleton-shimmer 1.4s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }
