@@ -31,6 +31,12 @@ export interface SheetTable {
   totalHeight: number;
   /** Baris judul tabel yang diulang di tiap halaman: [dari, sampai] (indeks baris tabel) */
   repeatRows: [number, number] | null;
+  /**
+   * Opsional. Baris dari indeks ini sampai akhir tabel dijaga SATU halaman (tidak dipotong), mis. grup
+   * data terakhir + garis bawah bingkai + blok tanda tangan, supaya tanda tangan tidak sendirian di
+   * halaman baru. Diisi oleh prepareOpmTable().
+   */
+  keepTogetherFrom?: number;
 }
 
 const isWhite = (c?: string) => !c || c.toUpperCase() === '#FFFFFF';
@@ -156,7 +162,7 @@ export function buildSheetTable(sheet: SheetModel): SheetTable | null {
     const idxs = rowsKept.map((r, i) => (r >= a && r <= b ? i : -1)).filter((i) => i >= 0);
     if (idxs.length) repeatRows = [idxs[0], idxs[idxs.length - 1]];
   }
-  if (!repeatRows) repeatRows = detectHeaderRows(rows) ?? detectHeaderByContent(rows);
+  if (!repeatRows) repeatRows = detectHeaderRows(rows);
 
   dedupeBorders(rows);
 
@@ -229,100 +235,6 @@ function detectHeaderRows(rows: TableRow[]): [number, number] | null {
   return [start, end];
 }
 
-/**
- * Cadangan kalau judul tabel TIDAK berwarna (mis. form OPM: hanya sebagian sel judul yang kuning):
- * deretan baris teks bergaris (minimal 3 sel berteks, tidak ada angka) yang langsung disusul baris
- * data bernomor (minimal 3 sel angka). Syarat "disusul baris angka" mencegah salah mengira
- * tabel yang isinya teks semua sebagai judul.
- */
-function detectHeaderByContent(rows: TableRow[]): [number, number] | null {
-  const limit = Math.min(rows.length, 15);
-  const live = (row: TableRow) => row.cells.filter((c): c is TableCell => !!c);
-  const isTextHeader = (row: TableRow) => {
-    const withText = live(row).filter((c) => c.text.trim() !== '');
-    return withText.length >= 3 && withText.every((c) => !c.isNumber) && withText.filter((c) => hasBorder(c.style)).length >= 3;
-  };
-  const isDataRow = (row: TableRow) => live(row).filter((c) => c.isNumber).length >= 3;
-
-  let start = -1;
-  for (let i = 0; i < limit; i++) {
-    if (isTextHeader(rows[i])) {
-      start = i;
-      break;
-    }
-  }
-  if (start < 0) return null;
-  let end = start;
-  while (end + 1 < limit && end - start < 4 && isTextHeader(rows[end + 1])) end++;
-  return end + 1 < rows.length && isDataRow(rows[end + 1]) ? [start, end] : null;
-}
-
-// ======================= Blok info proyek bawaan Excel =======================
-
-const INFO_LABEL = /^(OPERATION WAVE LENGTH|PROYEK|KONTRAK|SURAT PESANAN|DISTRICT|LOKASI|PELAKSANA)\b/i;
-
-/**
- * Form OPM dari Excel memuat blok info di atas tabel (OPERATION WAVE LENGTH, PROYEK, KONTRAK, SURAT
- * PESANAN, DISTRICT, LOKASI, PELAKSANA). Isinya sama dengan kop dokumen (judul + info proyek) yang sudah
- * dibuat aplikasi, jadi di PDF tampil dobel. Fungsi ini membuang blok itu (beserta satu baris kosong
- * pemisah di bawahnya) dan menyisakan tabel mulai dari judul kolom. Kalau blok tidak dikenali
- * (kurang dari 4 baris berlabel, tidak berurutan, atau ada sel gabungan yang melintasinya), tabel
- * dikembalikan apa adanya.
- */
-export function dropProjectInfoRows(table: SheetTable): SheetTable {
-  const rows = table.rows;
-  const limit = Math.min(rows.length, 20);
-  const isInfo = (i: number) => rows[i].cells.some((c) => c && INFO_LABEL.test(c.text.trim()));
-  const isBlank = (i: number) => rows[i].cells.every((c) => !c || (c.text.trim() === '' && c.rowSpan === 1));
-
-  let first = -1;
-  let last = -1;
-  let count = 0;
-  for (let i = 0; i < limit; i++) {
-    if (!isInfo(i)) continue;
-    if (first < 0) first = i;
-    last = i;
-    count++;
-  }
-  if (first < 0 || count < 4 || last - first + 1 !== count) return table;
-
-  let end = last;
-  if (end + 1 < rows.length && isBlank(end + 1)) end++;
-  if (end + 1 >= rows.length) return table;
-
-  // sel gabungan tidak boleh melintasi batas yang dibuang
-  for (let i = 0; i < rows.length; i++) {
-    for (const c of rows[i].cells) {
-      if (!c || c.rowSpan <= 1) continue;
-      const to = i + c.rowSpan - 1;
-      if ((i < first && to >= first) || (i >= first && i <= end && to > end)) return table;
-    }
-  }
-
-  const removed = end - first + 1;
-  const kept = [...rows.slice(0, first), ...rows.slice(end + 1)];
-
-  // garis bawah baris terakhir yang dibuang jadi garis atas baris berikutnya (kalau belum punya)
-  const lastRemoved = rows[end];
-  const nextIdx = first; // indeks baris (setelah pangkas) yang tadinya rows[end + 1]
-  kept[nextIdx] = {
-    ...kept[nextIdx],
-    cells: kept[nextIdx].cells.map((c, j) => {
-      const prev = lastRemoved.cells[j];
-      return c && !c.style.top && prev?.style.bottom ? { ...c, style: { ...c.style, top: prev.style.bottom } } : c;
-    }),
-  };
-
-  let repeatRows = table.repeatRows;
-  if (repeatRows) {
-    if (repeatRows[0] > end) repeatRows = [repeatRows[0] - removed, repeatRows[1] - removed];
-    else if (repeatRows[1] >= first) repeatRows = null;
-  }
-  if (!repeatRows) repeatRows = detectHeaderRows(kept) ?? detectHeaderByContent(kept);
-
-  return { ...table, rows: kept, totalHeight: kept.reduce((a, r) => a + r.heightPx, 0), repeatRows };
-}
-
 // ======================= Pemecahan halaman =======================
 
 /**
@@ -340,6 +252,11 @@ export function paginateTable(table: SheetTable, zoom: number, capacityPx: numbe
     })
   );
 
+  // Bagian ekor (grup terakhir + garis bawah bingkai + tanda tangan) dijaga satu halaman: baris-baris
+  // sesudah awalnya tidak boleh jadi awal halaman baru, dan grup yang dimulai di awalnya meluas sampai akhir.
+  const tail = table.keepTogetherFrom ?? -1;
+  if (tail >= 0) for (let k = tail + 1; k < n; k++) blocked[k] = true;
+
   const h = (i: number) => table.rows[i].heightPx * zoom;
 
   // Satu "grup" = deretan baris yang terikat sel gabungan (mis. 8 baris core milik satu ODP).
@@ -347,6 +264,7 @@ export function paginateTable(table: SheetTable, zoom: number, capacityPx: numbe
   // saja. Kalau tidak, grup yang baris pertamanya masih muat tapi seluruhnya tidak akan "menyangkut" di
   // halaman itu dan membuat halaman melebihi A4.
   const groupEnd = (start: number): number => {
+    if (start === tail) return n - 1;
     let end = start;
     for (let k = start; k <= end && k < n; k++) {
       table.rows[k].cells.forEach((cell) => {
@@ -384,9 +302,130 @@ export function paginateTable(table: SheetTable, zoom: number, capacityPx: numbe
   return pages;
 }
 
+// ======================= Khusus tabel OPM =======================
+
+/** Sel tabel sungguhan = berisi teks DAN punya garis tepi (garis bingkai luar / kotak info yang kosong tidak ikut). */
+const isBoxedText = (c: TableCell | null): c is TableCell => !!c && c.text.trim() !== '' && hasBorder(c.style);
+/** Baris tabel (judul kolom / data) punya banyak sel berteks+berbingkai; baris info (PROYEK, KONTRAK, ...) paling banyak 1-2. */
+const OPM_GRID_MIN_CELLS = 5;
+/** Tinggi maksimum (px Excel) baris kosong pembungkus bingkai di atas & bawah tabel, supaya tidak ada celah besar. */
+const OPM_FRAME_PAD_PX = 10;
+
+/**
+ * Merapikan sheet Data Pengukuran OPM supaya mirip dokumen acuan:
+ *  1. Blok info di dalam bingkai Excel (OPERATION WAVE LENGTH, PROYEK, KONTRAK, SURAT PESANAN, DISTRICT, LOKASI,
+ *     PELAKSANA) DIBUANG. Informasi itu sudah dicetak aplikasi sebagai header halaman (dari isian form), jadi kalau
+ *     ikut tercetak hasilnya dobel dan huruf tabelnya mengecil. Garis atas bingkai luar Excel tetap dipertahankan.
+ *  2. Judul kolom (2 baris) diulang di tiap halaman lanjutan, termasuk garis atas bingkai.
+ *  3. Grup data terakhir + garis bawah bingkai + blok tanda tangan Excel dijaga satu halaman.
+ *  4. Opsi `dropTrailer`: baris SETELAH garis bawah bingkai (blok tanda tangan bawaan Excel) dibuang. Dipakai saat
+ *     blok tanda tangan dari form aktif, supaya tidak ada dua blok tanda tangan sekaligus.
+ *
+ * Kalau sheet tidak punya baris tabel yang dikenali, tabel dikembalikan apa adanya.
+ */
+export function prepareOpmTable(table: SheetTable, options: { dropTrailer?: boolean } = {}): SheetTable {
+  const isGridRow = (row: TableRow) => row.cells.filter(isBoxedText).length >= OPM_GRID_MIN_CELLS;
+  const firstGrid = table.rows.findIndex(isGridRow);
+  if (firstGrid < 0) return table;
+  let lastGrid = table.rows.length - 1;
+  while (lastGrid > firstGrid && !isGridRow(table.rows[lastGrid])) lastGrid--;
+
+  const isBlank = (row: TableRow) => row.cells.every((c) => !c || c.text.trim() === '');
+  const hasAnyBorder = (row: TableRow) => row.cells.some((c) => !!c && hasBorder(c.style));
+
+  // Baris pertama yang kosong tetapi berbingkai = garis atas bingkai luar Excel: dipertahankan.
+  const keepTop = firstGrid > 0 && isBlank(table.rows[0]) && hasAnyBorder(table.rows[0]) ? 1 : 0;
+  const removed = firstGrid - keepTop;
+
+  // Salin baris (dan larik sel-nya) supaya tabel asli tidak berubah.
+  const rows: TableRow[] = [...table.rows.slice(0, keepTop), ...table.rows.slice(firstGrid)].map((r) => ({
+    ...r,
+    cells: [...r.cells],
+  }));
+  const last = lastGrid - removed;
+  const m = rows[0].cells.length;
+
+  if (options.dropTrailer) {
+    // Pertahankan satu baris pembungkus bingkai di bawah baris data terakhir (garis bawah bingkai), buang sisanya.
+    const keepBottom = last + 1 < rows.length && isBlank(rows[last + 1]) && hasAnyBorder(rows[last + 1]) ? 1 : 0;
+    rows.length = last + 1 + keepBottom;
+  }
+
+  // Sel yang tadinya tertutup sel gabungan dari blok yang dibuang jadi sel kosong biasa (tanpa garis/warna).
+  const covered = rows.map(() => new Array<boolean>(m).fill(false));
+  rows.forEach((row, i) =>
+    row.cells.forEach((c, j) => {
+      if (!c) return;
+      for (let a = 0; a < c.rowSpan; a++)
+        for (let b = 0; b < c.colSpan; b++) if (i + a < rows.length && j + b < m) covered[i + a][j + b] = true;
+    })
+  );
+  const sample = rows.flatMap((r) => r.cells).find((c): c is TableCell => !!c);
+  if (sample) {
+    const blank: CellStyle = { ...sample.style, fill: undefined, top: undefined, right: undefined, bottom: undefined, left: undefined };
+    rows.forEach((row, i) =>
+      row.cells.forEach((c, j) => {
+        if (!c && !covered[i][j]) row.cells[j] = { text: '', isNumber: false, isCentered: false, style: blank, rowSpan: 1, colSpan: 1 };
+      })
+    );
+  }
+
+  // Baris pembungkus bingkai (atas & bawah) dipendekkan.
+  const shrink = (i: number) => {
+    if (i >= 0 && i < rows.length) rows[i] = { ...rows[i], heightPx: Math.min(rows[i].heightPx, OPM_FRAME_PAD_PX) };
+  };
+  if (keepTop) shrink(0);
+  if (last + 1 < rows.length && isBlank(rows[last + 1]) && hasAnyBorder(rows[last + 1])) shrink(last + 1);
+
+  // Judul kolom = baris tabel pertama + baris-baris yang tertutup sel gabungannya (mis. "Distribusi ODC" 2 baris).
+  let headerEnd = keepTop;
+  for (let k = keepTop; k <= headerEnd; k++)
+    rows[k].cells.forEach((c) => {
+      if (c && c.rowSpan > 1) headerEnd = Math.max(headerEnd, Math.min(rows.length - 1, k + c.rowSpan - 1));
+    });
+
+  // Awal grup data terakhir (mis. 8 baris core ODP terakhir): dari sana sampai akhir dijaga satu halaman.
+  let keepTogetherFrom: number | undefined;
+  if (last < rows.length - 1) {
+    let start = last;
+    for (let k = headerEnd + 1; k < last; k++) {
+      if (rows[k].cells.some((c) => !!c && c.rowSpan > 1 && k + c.rowSpan - 1 >= last)) {
+        start = k;
+        break;
+      }
+    }
+    keepTogetherFrom = start;
+  }
+
+  return {
+    ...table,
+    rows,
+    totalHeight: rows.reduce((a, r) => a + r.heightPx, 0),
+    repeatRows: [0, headerEnd],
+    keepTogetherFrom,
+  };
+}
+
+/**
+ * Kalau seluruh tabel muat di SATU halaman, tinggi barisnya direnggangkan sedikit (maks. `maxFactor`x) supaya
+ * halaman terisi dan tabel terasa lega seperti dokumen acuan. Huruf TIDAK membesar (ukurannya ikut lebar kolom),
+ * hanya jarak antarbaris. Kalau tabel lebih dari satu halaman, tinggi aslinya dipertahankan agar tidak menambah halaman.
+ */
+export function stretchRowsToFit(table: SheetTable, zoom: number, capacityPx: number, maxFactor = 1.25): SheetTable {
+  const natural = table.totalHeight * zoom;
+  if (natural <= 0 || natural > capacityPx) return table;
+  const k = Math.min(maxFactor, (capacityPx * 0.97) / natural); // sisakan 3% sebagai ruang aman
+  if (k <= 1.01) return table;
+  return {
+    ...table,
+    rows: table.rows.map((r) => ({ ...r, heightPx: r.heightPx * k })),
+    totalHeight: table.totalHeight * k,
+  };
+}
+
 // ======================= HTML =======================
 
-const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const esc =(s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 const borderCss = (side: string, b: BorderSide | undefined, zoom: number) => {
   if (!b) return '';

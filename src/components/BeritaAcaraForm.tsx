@@ -13,6 +13,8 @@ import type { ProjectData } from '../types/evidence';
 import '../assets/style_BeritaAcara.css';
 import { useSharedProject } from '../utils/projectStore';
 import DistrictSelect from './DistrictSelect';
+import DualSignFields from './DualSignFields';
+import { DEFAULT_LEFT_PARTY, DEFAULT_RIGHT_PARTY, type SignParty } from './DualSignBlock';
 
 interface BeritaAcaraFormProps {
   /** 'LACT' atau 'BAUT' — dipakai untuk nama file yang diunduh */
@@ -24,6 +26,11 @@ interface BeritaAcaraFormProps {
   /** Judul dokumen di kop halaman PDF, mis. "LAPORAN COMMISIONING TEST" */
   defaultDocHeading: string;
   defaultClosingText: string;
+  /**
+   * Khusus BAUT: blok tanda tangan DUA PIHAK (kiri: Telkom Infrastruktur Indonesia, kanan: Telkom Akses beserta
+   * kota & tanggal), seperti contoh dokumen. Kosong/false = satu penandatangan seperti biasa (LACT).
+   */
+  dualSign?: boolean;
 }
 
 const emptyProject: ProjectData = {
@@ -51,6 +58,7 @@ export default function BeritaAcaraForm({
   activeMenu,
   defaultDocHeading,
   defaultClosingText,
+  dualSign = false,
 }: BeritaAcaraFormProps) {
   const [project, setProject] = useSharedProject(emptyProject);
   const [docHeading, setDocHeading] = useState(defaultDocHeading);
@@ -58,9 +66,11 @@ export default function BeritaAcaraForm({
   const [tanggalISO, setTanggalISO] = useState('');
   const [nama, setNama] = useState('');
   const [nik, setNik] = useState('');
-  const [jabatanBaris1, setJabatanBaris1] = useState('WASPANG');
-  const [jabatanBaris2, setJabatanBaris2] = useState('PT. TELKOM AKSES');
+  const [jabatanBaris1, setJabatanBaris1] = useState(dualSign ? DEFAULT_RIGHT_PARTY.jabatanBaris1 : 'WASPANG');
+  const [jabatanBaris2, setJabatanBaris2] = useState(dualSign ? DEFAULT_RIGHT_PARTY.jabatanBaris2 : 'PT. TELKOM AKSES');
   const [kota, setKota] = useState('');
+  // Pihak kiri (hanya dipakai kalau dualSign). Pihak kanan = nama/nik/jabatan/tanda tangan di atas.
+  const [leftParty, setLeftParty] = useState<SignParty>(DEFAULT_LEFT_PARTY);
 
   const [closingText, setClosingText] = useState(defaultClosingText);
 
@@ -85,6 +95,15 @@ export default function BeritaAcaraForm({
     }
   };
 
+  const patchLeft = (p: Partial<SignParty>) => setLeftParty((prev) => ({ ...prev, ...p }));
+  const patchRight = (p: Partial<SignParty>) => {
+    if (p.nama !== undefined) setNama(p.nama);
+    if (p.nik !== undefined) setNik(p.nik);
+    if (p.jabatanBaris1 !== undefined) setJabatanBaris1(p.jabatanBaris1);
+    if (p.jabatanBaris2 !== undefined) setJabatanBaris2(p.jabatanBaris2);
+    if (p.signatureDataUrl !== undefined) setSignatureDataUrl(p.signatureDataUrl);
+  };
+
   const handlePreview = () => {
     if (docHeading.trim() === '') {
       alert('Mohon isi judul dokumen terlebih dahulu.');
@@ -100,7 +119,11 @@ export default function BeritaAcaraForm({
       return;
     }
     if (nama.trim() === '' || nik.trim() === '') {
-      alert('Mohon isi Nama dan NIK penandatangan.');
+      alert(dualSign ? 'Mohon isi Nama dan NIK penandatangan kanan.' : 'Mohon isi Nama dan NIK penandatangan.');
+      return;
+    }
+    if (dualSign && (leftParty.nama.trim() === '' || leftParty.nik.trim() === '')) {
+      alert('Mohon isi Nama dan NIK penandatangan kiri.');
       return;
     }
     if (kota.trim() === '') {
@@ -159,6 +182,7 @@ export default function BeritaAcaraForm({
             choice2b={FIXED_CHOICE_2B}
             closingText={closingText}
             signatureDataUrl={signatureDataUrl}
+            leftParty={dualSign ? leftParty : undefined}
             options={exportOpts}
           />
         </div>
@@ -255,6 +279,10 @@ export default function BeritaAcaraForm({
           Delapan, September, Dua Ribu Dua Puluh Enam") dari tanggal di atas.
         </p>
 
+        {dualSign ? (
+          <DualSignFields idPrefix="ba" left={leftParty} right={{ nama, nik, jabatanBaris1, jabatanBaris2, signatureDataUrl }} onLeftChange={patchLeft} onRightChange={patchRight} />
+        ) : (
+          <>
         <div className="evidence-form-fields">
           <label>
             Nama Penandatangan
@@ -310,6 +338,8 @@ export default function BeritaAcaraForm({
             <img src={signatureDataUrl} alt="Pratinjau tanda tangan" className="ba-signature-preview" />
           )}
         </div>
+          </>
+        )}
 
         {/*
           Dulu di sini ada "Poin 1" dan "Poin 2": tombol untuk memilih

@@ -1,0 +1,71 @@
+/* ===== Blok tanda tangan DUA PIHAK (khusus BAUT) ===== */
+/* Dipakai di: Berita Acara Uji Terima, BOQ, Data Pengukuran OPM, Lampiran Mancore. */
+
+/* Dibuat sedikit lebih lebar dari kotak teks halaman (602px) — menjorok 40px ke margin di tiap sisi,
+   sama seperti tabel Excel (lihat style_ExcelDoc.css) — supaya nama perusahaan yang panjang
+   ("PT. TELKOM INFRASTRUKTUR INDONESIA, Tbk.") muat satu baris. */
+.pdf-dsign {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 30px -40px 0;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.35;
+}
+
+.pdf-dsign-col {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.pdf-dsign-col p {
+  margin: 1px 0;
+}
+
+/* Ruang tanda tangan: tinggi tetap supaya kedua kolom sejajar, gambar tanda tangan di tengahnya */
+.pdf-dsign-space {
+  height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px 0;
+}
+
+.pdf-dsign-space img {
+  max-height: 74px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.pdf-dsign-name {
+  text-decoration: underline;
+}
+
+/* ===== Form: isian dua penandatangan ===== */
+
+.dsign-group {
+  margin-top: 6px;
+}
+
+.dsign-group-title {
+  margin: 14px 0 2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+}
+
+.dsign-group-desc {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: #777;
+}
+
+.dsign-preview {
+  max-width: 220px;
+  max-height: 90px;
+  object-fit: contain;
+  display: block;
+  margin-top: 8px;
+}

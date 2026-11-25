@@ -48,6 +48,9 @@ export async function compressImage(
           return;
         }
 
+        // JPEG tidak punya transparansi: tanpa alas putih, PNG transparan (mis. tanda tangan) jadi hitam pekat
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         resolve(canvas.toDataURL('image/jpeg', quality));
       };

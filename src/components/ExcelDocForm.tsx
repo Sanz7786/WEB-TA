@@ -11,11 +11,13 @@ import { QUALITY_PRESETS, buildPdfFileName } from './ExportOptions';
 import { compressImage, formatBytes, MAX_ORIGINAL_BYTES, MAX_ORIGINAL_MB } from '../utils/imageCompress';
 import { generatePdfFromElement } from '../utils/pdfFromElement';
 import { readXlsx, type WorkbookModel } from '../utils/xlsxReader';
-import { buildSheetTable, dropProjectInfoRows, paginateTable, type SheetTable } from '../utils/xlsxTable';
+import { buildSheetTable, paginateTable, prepareOpmTable, stretchRowsToFit, type SheetTable } from '../utils/xlsxTable';
 import type { ProjectData } from '../types/evidence';
 import '../assets/style_ExcelDoc.css';
 import { useSharedProject } from '../utils/projectStore';
 import DistrictSelect from './DistrictSelect';
+import DualSignFields from './DualSignFields';
+import { DEFAULT_LEFT_PARTY, DEFAULT_RIGHT_PARTY, type SignParty } from './DualSignBlock';
 
 export type ExcelDocKind = 'boq' | 'opm' | 'mancore';
 
@@ -33,6 +35,11 @@ interface ExcelDocFormProps {
   defaultTitleLine2?: string;
   /** Tampilkan blok tanda tangan bawaan aplikasi? (BOQ: ya. OPM/Mancore: Excel biasanya sudah memuat nama penandatangan) */
   defaultShowSign: boolean;
+  /**
+   * Khusus BAUT: blok tanda tangan DUA PIHAK (kiri: Telkom Infrastruktur Indonesia, kanan: Telkom Akses beserta
+   * kota & tanggal), seperti contoh dokumen. Kosong/false = satu penandatangan seperti biasa (LACT).
+   */
+  dualSign?: boolean;
 }
 
 const KINDS: Record<ExcelDocKind, { fileTag: string; imageLabel: string; imagePrompt: string; defaultSheets: 'first' | 'all' }> = {
@@ -74,6 +81,8 @@ const FRAME_HEIGHT_TWO_LINE = 690;
 const FRAME_HEIGHT_ONE_LINE = 722;
 // Tinggi blok tanda tangan (dikurangkan dari tinggi tersedia kalau blok itu dipakai)
 const SIGN_HEIGHT = 250;
+/** Tinggi blok tanda tangan 2 pihak (lebih ringkas dari blok 1 pihak): margin atas + 5 baris + ruang tanda tangan */
+const SIGN_HEIGHT_DUAL = 215;
 
 export default function ExcelDocForm({
   docTitle,
@@ -83,6 +92,7 @@ export default function ExcelDocForm({
   defaultTitleLine1,
   defaultTitleLine2,
   defaultShowSign,
+  dualSign = false,
 }: ExcelDocFormProps) {
   const info = KINDS[kind];
   const inputId = `xdoc-${kind}-excel`;
@@ -100,16 +110,16 @@ export default function ExcelDocForm({
   const [importError, setImportError] = useState('');
   const [image, setImage] = useState<{ file: File; preview: string } | null>(null);
 
-  // Khusus OPM: blok info proyek di dalam Excel (OPERATION WAVE LENGTH, PROYEK, dst.) sudah ada di kop dokumen
-  const [showExcelInfo, setShowExcelInfo] = useState(false);
   const [showSign, setShowSign] = useState(defaultShowSign);
   const [tanggalISO, setTanggalISO] = useState('');
   const [nama, setNama] = useState('');
   const [nik, setNik] = useState('');
-  const [jabatanBaris1, setJabatanBaris1] = useState('WASPANG');
-  const [jabatanBaris2, setJabatanBaris2] = useState('PT. TELKOM AKSES');
+  const [jabatanBaris1, setJabatanBaris1] = useState(dualSign ? DEFAULT_RIGHT_PARTY.jabatanBaris1 : 'WASPANG');
+  const [jabatanBaris2, setJabatanBaris2] = useState(dualSign ? DEFAULT_RIGHT_PARTY.jabatanBaris2 : 'PT. TELKOM AKSES');
   const [kota, setKota] = useState('');
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
+  // Pihak kiri (hanya dipakai kalau dualSign). Pihak kanan = nama/nik/jabatan/tanda tangan di atas.
+  const [leftParty, setLeftParty] = useState<SignParty>(DEFAULT_LEFT_PARTY);
 
   const [mode, setMode] = useState<'form' | 'preview'>('form');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -120,14 +130,17 @@ export default function ExcelDocForm({
   };
 
   // ---------- Tabel dari tiap sheet (dihitung sekali per file) ----------
+  // Khusus OPM, tabel dirapikan lebih dulu (blok info Excel dibuang karena sudah ada di header halaman,
+  // judul kolom diulang di halaman lanjutan, dst.; lihat prepareOpmTable). BOQ & Mancore tidak berubah.
   const tables = useMemo(() => {
     const map = new Map<string, SheetTable | null>();
     workbook?.sheets.forEach((s) => {
       const t = buildSheetTable(s);
-      map.set(s.name, t && kind === 'opm' && !showExcelInfo ? dropProjectInfoRows(t) : t);
+      // Blok tanda tangan bawaan Excel dibuang kalau blok tanda tangan dari form aktif (supaya tidak dobel)
+      map.set(s.name, t && kind === 'opm' ? prepareOpmTable(t, { dropTrailer: showSign }) : t);
     });
     return map;
-  }, [workbook, kind, showExcelInfo]);
+  }, [workbook, kind, showSign]);
 
   const sheetInfos: SheetInfo[] = useMemo(
     () =>
@@ -139,19 +152,21 @@ export default function ExcelDocForm({
   );
 
   // ---------- Halaman hasil: tiap sheet yang dipilih jadi satu atau beberapa halaman ----------
-  const frameHeight = (twoLines ? FRAME_HEIGHT_TWO_LINE : FRAME_HEIGHT_ONE_LINE) - (showSign ? SIGN_HEIGHT : 0);
+  const frameHeight = (twoLines ? FRAME_HEIGHT_TWO_LINE : FRAME_HEIGHT_ONE_LINE) - (showSign ? (dualSign ? SIGN_HEIGHT_DUAL : SIGN_HEIGHT) : 0);
   const excelPages = useMemo(() => {
     if (!workbook) return [];
     const out: { key: string; table: SheetTable; rows: number[]; zoom: number }[] = [];
     for (const s of workbook.sheets) {
       if (!selected.has(s.name)) continue;
-      const t = tables.get(s.name);
-      if (!t) continue;
-      const zoom = Math.min(1, CONTENT_WIDTH / t.totalWidth);
+      const base = tables.get(s.name);
+      if (!base) continue;
+      const zoom = Math.min(1, CONTENT_WIDTH / base.totalWidth);
+      // OPM yang muat satu halaman: jarak antarbaris dilonggarkan sedikit (seperti dokumen acuan)
+      const t = kind === 'opm' ? stretchRowsToFit(base, zoom, frameHeight) : base;
       paginateTable(t, zoom, frameHeight).forEach((rows, i) => out.push({ key: `${s.name}-${i}`, table: t, rows, zoom }));
     }
     return out;
-  }, [workbook, selected, tables, frameHeight]);
+  }, [workbook, selected, tables, frameHeight, kind]);
 
   const totalPages = source === 'excel' ? excelPages.length : image ? 1 : 0;
 
@@ -226,6 +241,15 @@ export default function ExcelDocForm({
     }
   };
 
+  const patchLeft = (p: Partial<SignParty>) => setLeftParty((prev) => ({ ...prev, ...p }));
+  const patchRight = (p: Partial<SignParty>) => {
+    if (p.nama !== undefined) setNama(p.nama);
+    if (p.nik !== undefined) setNik(p.nik);
+    if (p.jabatanBaris1 !== undefined) setJabatanBaris1(p.jabatanBaris1);
+    if (p.jabatanBaris2 !== undefined) setJabatanBaris2(p.jabatanBaris2);
+    if (p.signatureDataUrl !== undefined) setSignatureDataUrl(p.signatureDataUrl);
+  };
+
   const handlePreview = () => {
     if (titleLine1.trim() === '' || (twoLines && titleLine2.trim() === '')) {
       alert('Mohon isi judul dokumen terlebih dahulu.');
@@ -244,7 +268,15 @@ export default function ExcelDocForm({
       return;
     }
     if (showSign && (!tanggalISO || nama.trim() === '' || nik.trim() === '' || kota.trim() === '')) {
-      alert('Mohon lengkapi Tanggal, Kota, Nama, dan NIK untuk blok tanda tangan (atau matikan blok tanda tangan).');
+      alert(
+        dualSign
+          ? 'Mohon lengkapi Tanggal, Kota, serta Nama dan NIK penandatangan kanan untuk blok tanda tangan (atau matikan blok tanda tangan).'
+          : 'Mohon lengkapi Tanggal, Kota, Nama, dan NIK untuk blok tanda tangan (atau matikan blok tanda tangan).'
+      );
+      return;
+    }
+    if (showSign && dualSign && (leftParty.nama.trim() === '' || leftParty.nik.trim() === '')) {
+      alert('Mohon lengkapi Nama dan NIK penandatangan kiri (atau matikan blok tanda tangan).');
       return;
     }
     setMode('preview');
@@ -272,7 +304,17 @@ export default function ExcelDocForm({
     }
   };
 
-  const signProps = { showSign, tanggalISO, nama, nik, jabatanBaris1, jabatanBaris2, kota, signatureDataUrl };
+  const signProps = {
+    showSign,
+    tanggalISO,
+    nama,
+    nik,
+    jabatanBaris1,
+    jabatanBaris2,
+    kota,
+    signatureDataUrl,
+    leftParty: dualSign ? leftParty : undefined,
+  };
   const pageProps = {
     showLogos: exportOpts.showLogos,
     logoSize: exportOpts.logoSize,
@@ -427,26 +469,15 @@ export default function ExcelDocForm({
               <p className="xdoc-hint">{info.imageLabel}</p>
             </div>
           )}
-          {kind === 'opm' && source === 'excel' && workbook && (
-            <>
-              <label className="xdoc-check" style={{ marginTop: 8 }}>
-                <input type="checkbox" checked={showExcelInfo} onChange={(e) => setShowExcelInfo(e.target.checked)} />
-                Tampilkan blok info proyek dari Excel (OPERATION WAVE LENGTH, PROYEK, KONTRAK, dst.)
-              </label>
-              {!showExcelInfo && (
-                <p className="xdoc-hint">
-                  Dimatikan karena info proyek sudah ada di kop dokumen (di atas tabel), jadi tidak tampil dobel. Tabel dimulai dari judul kolom.
-                </p>
-              )}
-            </>
-          )}
           {totalPages > 0 && <p className="xdoc-hint">Hasil: {totalPages} halaman.</p>}
         </div>
 
         <div className="evidence-heading-field">
           <label className="xdoc-check">
             <input type="checkbox" checked={showSign} onChange={(e) => setShowSign(e.target.checked)} />
-            Tampilkan blok tanda tangan (tanggal, nama, NIK, tanda tangan)
+            {dualSign
+              ? 'Tampilkan blok tanda tangan 2 pihak (kota, tanggal, nama, NIK, tanda tangan)'
+              : 'Tampilkan blok tanda tangan (tanggal, nama, NIK, tanda tangan)'}
           </label>
           {!showSign && (
             <p className="xdoc-hint">
@@ -456,7 +487,29 @@ export default function ExcelDocForm({
           )}
         </div>
 
-        {showSign && (
+        {showSign && dualSign && (
+          <>
+            <div className="evidence-form-fields" style={{ marginTop: 4 }}>
+              <label>
+                Tanggal
+                <input type="date" value={tanggalISO} onChange={(e) => setTanggalISO(e.target.value)} />
+              </label>
+              <label>
+                Kota (untuk baris tanda tangan)
+                <input type="text" value={kota} onChange={(e) => setKota(e.target.value)} placeholder="Contoh: Surabaya" />
+              </label>
+            </div>
+            <DualSignFields
+              idPrefix={inputId}
+              left={leftParty}
+              right={{ nama, nik, jabatanBaris1, jabatanBaris2, signatureDataUrl }}
+              onLeftChange={patchLeft}
+              onRightChange={patchRight}
+            />
+          </>
+        )}
+
+        {showSign && !dualSign && (
           <>
             <div className="evidence-form-fields" style={{ marginTop: 4 }}>
               <label>

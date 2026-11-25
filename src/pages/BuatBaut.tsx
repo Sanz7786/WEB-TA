@@ -58,6 +58,10 @@ export default function BuatBaut() {
   // Menu "Cover", "Daftar Isi", "Berita Acara Uji Terima", dan "BOQ"
   // (empat submenu pertama Tools BAUT) memakai form & halaman tersendiri,
   // terpisah dari EvidenceForm yang menangani upload evidence.
+  //
+  // KHUSUS BAUT (tidak di LACT): Berita Acara Uji Terima, BOQ, Data Pengukuran OPM, dan
+  // Lampiran Mancore memakai blok tanda tangan DUA PIHAK (prop `dualSign`): kiri PT. TELKOM
+  // INFRASTRUKTUR INDONESIA, Tbk., kanan PT. TELKOM AKSES beserta kota & tanggal.
   if (mode === 'cover') {
     return (
       <CoverForm
@@ -96,6 +100,7 @@ export default function BuatBaut() {
         activeMenu="baut-builder"
         defaultDocHeading="DOKUMEN BERITA ACARA UJI TERIMA"
         defaultClosingText="Demikian Berita Acara Uji Terima ini dibuat dengan sebenarnya dan dapat dipertanggung jawabkan."
+        dualSign
       />
     );
   }
@@ -110,6 +115,7 @@ export default function BuatBaut() {
         activeMenu="baut-builder"
         defaultTitleLine1="BILL OF QUANTITY UJI TERIMA"
         defaultShowSign
+        dualSign
       />
     );
   }
@@ -125,6 +131,7 @@ export default function BuatBaut() {
         defaultTitleLine1="LAMPIRAN DATA PENGUKURAN OPM"
         defaultTitleLine2="PROJECT OUTSIDE PLANT FIBER OPTIC"
         defaultShowSign={false}
+        dualSign
       />
     );
   }
@@ -150,6 +157,7 @@ export default function BuatBaut() {
         activeMenu="baut-builder"
         defaultTitleLine1="LAMPIRAN MANCORE"
         defaultShowSign={false}
+        dualSign
       />
     );
   }

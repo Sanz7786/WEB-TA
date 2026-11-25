@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import PdfHeader from './PdfHeader';
+import DualSignBlock, { type SignParty } from './DualSignBlock';
 import type { ProjectData } from '../types/evidence';
 import { formatTanggalKata, parseDateLocal } from '../utils/terbilang';
 import { DEFAULT_EXPORT_OPTIONS, type ExportOptions } from './ExportOptions';
@@ -27,6 +28,12 @@ interface BeritaAcaraPageProps {
   choice2b: ChoicePair;
   closingText: string;
   signatureDataUrl: string | null;
+  /**
+   * Khusus BAUT: kalau diisi, blok tanda tangan di bawah tampil DUA PIHAK (ini = pihak kiri; nama/NIK/jabatan/
+   * tanda tangan di atas = pihak kanan, dan paragraf "yang bertanda tangan di bawah ini" tetap memakai pihak
+   * kanan). Kosong = satu penandatangan seperti biasa (LACT).
+   */
+  leftParty?: SignParty;
   /** Opsi export dari panel "Opsi Export PDF". Kosong = pengaturan standar. */
   options?: ExportOptions;
 }
@@ -186,6 +193,7 @@ export default function BeritaAcaraPage({
   choice2b,
   closingText,
   signatureDataUrl,
+  leftParty,
   options = DEFAULT_EXPORT_OPTIONS,
 }: BeritaAcaraPageProps) {
   const tgl = parseDateLocal(tanggalISO);
@@ -285,22 +293,31 @@ export default function BeritaAcaraPage({
 
       <p className="pdf-ba-paragraph">{closingText}</p>
 
-      <div className="pdf-ba-sign-wrap">
-        <div className="pdf-ba-sign-block">
-          <p>
-            {kota || '…'}, {kata.singkat}
-          </p>
-          <p>{jabatanBaris1}</p>
-          <p>{jabatanBaris2}</p>
+      {leftParty ? (
+        <DualSignBlock
+          tanggalISO={tanggalISO}
+          kota={kota}
+          left={leftParty}
+          right={{ nama, nik, jabatanBaris1, jabatanBaris2, signatureDataUrl }}
+        />
+      ) : (
+        <div className="pdf-ba-sign-wrap">
+          <div className="pdf-ba-sign-block">
+            <p>
+              {kota || '…'}, {kata.singkat}
+            </p>
+            <p>{jabatanBaris1}</p>
+            <p>{jabatanBaris2}</p>
 
-          <div className="pdf-ba-sign-space">
-            {signatureDataUrl && <img src={signatureDataUrl} alt="Tanda tangan" />}
+            <div className="pdf-ba-sign-space">
+              {signatureDataUrl && <img src={signatureDataUrl} alt="Tanda tangan" />}
+            </div>
+
+            <p className="pdf-ba-sign-name">{nama}</p>
+            <p>NIK. {nik}</p>
           </div>
-
-          <p className="pdf-ba-sign-name">{nama}</p>
-          <p>NIK. {nik}</p>
         </div>
-      </div>
+      )}
 
       {options.showPageNumber && <div className="pdf-page-number">Halaman 1</div>}
     </div>

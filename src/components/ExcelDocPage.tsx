@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import PdfHeader from './PdfHeader';
+import DualSignBlock, { type SignParty } from './DualSignBlock';
 import type { LogoSize } from '../config/brand';
 import type { ProjectData } from '../types/evidence';
 import { formatTanggalKata, parseDateLocal } from '../utils/terbilang';
@@ -26,6 +27,11 @@ interface ExcelDocPageProps {
   jabatanBaris2: string;
   kota: string;
   signatureDataUrl: string | null;
+  /**
+   * Khusus BAUT: kalau diisi, blok tanda tangan tampil DUA PIHAK (ini = pihak kiri; nama/NIK/jabatan/tanda
+   * tangan di atas = pihak kanan). Kosong = satu penandatangan seperti biasa (LACT).
+   */
+  leftParty?: SignParty;
 }
 
 /**
@@ -50,6 +56,7 @@ export default function ExcelDocPage({
   jabatanBaris2,
   kota,
   signatureDataUrl,
+  leftParty,
 }: ExcelDocPageProps) {
   const tgl = parseDateLocal(tanggalISO);
   const tglSingkat = tgl ? formatTanggalKata(tgl).singkat : '…';
@@ -97,7 +104,16 @@ export default function ExcelDocPage({
 
       <div className="pdf-xdoc-frame">{children}</div>
 
-      {showSign && (
+      {showSign && leftParty && (
+        <DualSignBlock
+          tanggalISO={tanggalISO}
+          kota={kota}
+          left={leftParty}
+          right={{ nama, nik, jabatanBaris1, jabatanBaris2, signatureDataUrl }}
+        />
+      )}
+
+      {showSign && !leftParty && (
         <div className="pdf-xdoc-sign-wrap">
           <div className="pdf-xdoc-sign-block">
             <p>
