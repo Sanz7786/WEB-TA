@@ -216,3 +216,57 @@ select:focus {
   border-color: var(--red);
   box-shadow: 0 0 0 3px rgba(227, 0, 11, 0.14);
 }
+
+/* =========================================================
+   3. POP-IN INDIKATOR TERSIMPAN & CHIP PAKET PDF
+   ========================================================= */
+.sub-menu-saved::before {
+  animation: dot-pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bundle-chip {
+  animation: chip-pop-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes dot-pop-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes chip-pop-in {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* =========================================================
+   4. TRANSISI MASUK KONTEN SAAT PINDAH MENU
+   ========================================================= */
+.page-enter {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  animation: page-fade-slide 0.22s ease-out;
+}
+
+@keyframes page-fade-slide {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
