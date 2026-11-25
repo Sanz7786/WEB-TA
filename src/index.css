@@ -71,19 +71,39 @@ body,
   padding: 2rem;
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s;
   background: #f8fafc; /* slate-50 */
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .upload-zone:hover {
-  border-color: #e3000b; /* red-600 */
-  background: #fff1f2; /* red-50 equivalent */
+  border-color: var(--red);
+  background: var(--red-light);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px -4px rgba(227, 0, 11, 0.12);
+}
+
+.upload-zone:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow: none;
 }
 
 .upload-zone.has-file {
   border-style: solid;
   border-color: #10b981; /* emerald-500 */
   background: #f0fdf4; /* green-50 */
+  animation: upload-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.upload-zone.has-file:hover {
+  border-color: #059669; /* emerald-600 */
+  background: #ecfdf5;
+  box-shadow: 0 6px 16px -4px rgba(16, 185, 129, 0.16);
+}
+
+@keyframes upload-pop {
+  0% { transform: scale(0.97); }
+  60% { transform: scale(1.015); }
+  100% { transform: scale(1); }
 }
 
 .spinner {
@@ -174,3 +194,25 @@ button:not(:disabled):active {
   box-shadow: none;
 }
 
+/* =========================================================
+   2. INPUT FORM (Focus Ring & Transisi Halus)
+   ========================================================= */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]):not([type="submit"]):not([type="button"]),
+textarea,
+select {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]):not([type="submit"]):not([type="button"]):hover:not(:disabled):not(:focus),
+textarea:hover:not(:disabled):not(:focus),
+select:hover:not(:disabled):not(:focus) {
+  border-color: #94a3b8;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]):not([type="submit"]):not([type="button"]):focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(227, 0, 11, 0.14);
+}
