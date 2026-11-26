@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -31,7 +32,6 @@
   --radius-sm: 8px;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 /* =========================================================
    PERBAIKAN UTAMA: Memastikan Full Screen & Hilangkan Sisa Ruang
@@ -71,19 +71,39 @@ body,
   padding: 2rem;
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s;
   background: #f8fafc; /* slate-50 */
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .upload-zone:hover {
-  border-color: #e3000b; /* red-600 */
-  background: #fff1f2; /* red-50 equivalent */
+  border-color: var(--red);
+  background: var(--red-light);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px -4px rgba(227, 0, 11, 0.12);
+}
+
+.upload-zone:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow: none;
 }
 
 .upload-zone.has-file {
   border-style: solid;
   border-color: #10b981; /* emerald-500 */
   background: #f0fdf4; /* green-50 */
+  animation: upload-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.upload-zone.has-file:hover {
+  border-color: #059669; /* emerald-600 */
+  background: #ecfdf5;
+  box-shadow: 0 6px 16px -4px rgba(16, 185, 129, 0.16);
+}
+
+@keyframes upload-pop {
+  0% { transform: scale(0.97); }
+  60% { transform: scale(1.015); }
+  100% { transform: scale(1); }
 }
 
 .spinner {
@@ -99,3 +119,498 @@ body,
 @keyframes prog-anim { 0%{width:0%} 80%{width:85%} 100%{width:100%} }
 
 .prog-animate { animation: prog-anim 2s ease-out forwards; }
+
+/* =========================================================
+   1. HOVER CARD + SHINE (Tombol & Menu Sidebar)
+   ========================================================= */
+.nav-item,
+.sub-menu-item,
+button:not(:disabled) {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Kilauan default (untuk tombol solid & menu aktif) */
+.nav-item::after,
+.sub-menu-item::after,
+button:not(:disabled)::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+
+/* Hover Card untuk menu TIDAK aktif (latar terang, teks merah) */
+.sub-menu-item:not(.active):hover,
+.nav-item:not(.active):hover {
+  background-color: var(--red-light); /* #fff1f2 */
+  color: var(--red); /* #e3000b */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px -2px rgba(15, 23, 42, 0.08);
+}
+
+.sub-menu-item:not(.active)::after,
+.nav-item:not(.active)::after {
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(227, 0, 11, 0.16) 50%,
+    transparent 100%
+  );
+}
+
+/* Hover Card untuk menu AKTIF (latar tetap merah, teks tetap putih tegas) */
+.sub-menu-item.active:hover,
+.nav-item.active:hover {
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px -3px rgba(227, 0, 11, 0.38);
+}
+
+/* Trigger kilauan saat hover */
+.nav-item:hover::after,
+.sub-menu-item:hover::after,
+button:not(:disabled):hover::after {
+  left: 140%;
+  transition: left 0.55s ease;
+}
+
+/* Efek tekan saat diklik */
+.nav-item:active,
+.sub-menu-item:active,
+button:not(:disabled):active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
+}
+
+/* =========================================================
+   2. INPUT FORM (Focus Ring & Transisi Halus)
+   ========================================================= */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]):not([type="submit"]):not([type="button"]),
+textarea,
+select {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]):not([type="submit"]):not([type="button"]):hover:not(:disabled):not(:focus),
+textarea:hover:not(:disabled):not(:focus),
+select:hover:not(:disabled):not(:focus) {
+  border-color: #94a3b8;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]):not([type="submit"]):not([type="button"]):focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(227, 0, 11, 0.14);
+}
+
+/* =========================================================
+   3. POP-IN INDIKATOR TERSIMPAN & CHIP PAKET PDF
+   ========================================================= */
+.sub-menu-saved::before {
+  animation: dot-pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bundle-chip {
+  animation: chip-pop-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes dot-pop-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes chip-pop-in {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* =========================================================
+   4. TRANSISI MASUK KONTEN SAAT PINDAH MENU
+   ========================================================= */
+.page-enter {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  animation: page-fade-slide 0.22s ease-out;
+}
+
+@keyframes page-fade-slide {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   5. TOMBOL MELAYANG SCROLL-TO-TOP
+   ========================================================= */
+.layout-body .scroll-top-btn {
+  position: absolute;
+  right: 48px;
+  bottom: 40px;
+  z-index: 5;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ta-red, #e3000b), var(--ta-red-dark, #b80009));
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(227, 0, 11, 0.35);
+
+  /* Kondisi tersembunyi */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px) scale(0.9);
+  transition: opacity 0.22s ease, transform 0.22s ease, box-shadow 0.2s ease;
+}
+
+.layout-body .scroll-top-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.layout-body .scroll-top-btn.visible:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 8px 20px rgba(227, 0, 11, 0.45);
+}
+
+.layout-body .scroll-top-btn.visible:active {
+  transform: translateY(0) scale(0.96);
+}
+
+/* =========================================================
+   WELCOME PAGE — LINEAR LIGHT STYLE
+   ========================================================= */
+.lw-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 20px 36px;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+/* Grid tipis yang memudar di tepi */
+.lw-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(15, 23, 42, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.045) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 40%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 40%, #000 35%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ambient spotlight merah sangat tipis di belakang hero */
+.lw-bg-glow {
+  position: absolute;
+  top: -110px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 680px;
+  height: 360px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(238, 28, 37, 0.12) 0%,
+    rgba(238, 28, 37, 0.03) 45%,
+    transparent 72%
+  );
+  filter: blur(24px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lw-hero {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 680px;
+}
+
+/* Status pill badge */
+.lw-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(15, 23, 42, 0.09);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  letter-spacing: -0.01em;
+  margin-bottom: 20px;
+}
+
+.lw-pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ta-red, #e3000b);
+  box-shadow: 0 0 0 3px rgba(227, 0, 11, 0.16);
+}
+
+.lw-logo-wrap {
+  margin-bottom: 14px;
+}
+
+.lw-logo {
+  height: 62px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Tipografi tajam khas Linear */
+.lw-title {
+  margin: 0 0 14px;
+  font-size: 38px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: #0f172a;
+}
+
+.lw-title-accent {
+  background: linear-gradient(90deg, #0f172a 0%, #e3000b 55%, #b80009 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lw-desc {
+  margin: 0 0 26px;
+  max-width: 560px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: #475569;
+}
+
+/* Tombol CTA */
+.lw-cta-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 36px;
+}
+
+.lw-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.lw-btn-primary {
+  border: 1px solid transparent;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--ta-red, #e3000b), var(--ta-red-dark, #b80009));
+  box-shadow: 0 6px 18px -4px rgba(227, 0, 11, 0.42);
+}
+
+.lw-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -4px rgba(227, 0, 11, 0.5);
+}
+
+.lw-btn-primary .lw-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.lw-btn-primary:hover .lw-arrow {
+  transform: translateX(3px);
+}
+
+.lw-btn-secondary {
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.lw-btn-secondary:hover {
+  transform: translateY(-2px);
+  border-color: rgba(227, 0, 11, 0.35);
+  color: var(--ta-red, #e3000b);
+  background: #ffffff;
+  box-shadow: 0 6px 16px -4px rgba(15, 23, 42, 0.08);
+}
+
+/* 3 Kartu pintasan bergaya hairline card Linear */
+.lw-cards {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 820px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.lw-card {
+  text-align: left;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(15, 23, 42, 0.09);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease;
+}
+
+.lw-card:hover {
+  transform: translateY(-4px);
+  background: #ffffff;
+  border-color: rgba(227, 0, 11, 0.35);
+  box-shadow: 0 14px 28px -10px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(227, 0, 11, 0.12);
+}
+
+.lw-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.lw-card-badge {
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: #fff1f2;
+  color: var(--ta-red, #e3000b);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.lw-card-arrow {
+  font-size: 14px;
+  color: #94a3b8;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.lw-card:hover .lw-card-arrow {
+  color: var(--ta-red, #e3000b);
+  transform: translate(2px, -2px);
+}
+
+.lw-card-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.015em;
+}
+
+.lw-card-desc {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: #64748b;
+}
+
+/* Animasi masuk Blur-to-Sharp bertahap khas Linear */
+.lw-reveal {
+  opacity: 0;
+  animation: lw-blur-reveal 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.lw-d1 { animation-delay: 0.04s; }
+.lw-d2 { animation-delay: 0.11s; }
+.lw-d3 { animation-delay: 0.18s; }
+.lw-d4 { animation-delay: 0.25s; }
+.lw-d5 { animation-delay: 0.32s; }
+.lw-d6 { animation-delay: 0.40s; }
+
+@keyframes lw-blur-reveal {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   SMOOTH SCROLLING & PENGAMAN ANIMASI
+   ========================================================= */
+html,
+.layout-content,
+.layout-sidebar {
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html,
+  .layout-content,
+  .layout-sidebar {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

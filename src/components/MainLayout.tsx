@@ -118,6 +118,24 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
   const bundleSections = (builder?.children ?? [])
     .map((c) => ({ id: c.id, label: c.label, mode: c.mode as string, href: c.href }));
   const contentRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const handleMainScroll = () => {
+    const el = mainRef.current;
+    if (!el) return;
+    setShowScrollTop(el.scrollTop > 220);
+  };
+
+  const scrollToTop = () => {
+    mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Kembalikan scroll ke atas otomatis saat pindah menu/mode
+  useEffect(() => {
+    mainRef.current?.scrollTo({ top: 0, behavior: 'instant' });
+    setShowScrollTop(false);
+  }, [activeMenu, currentMode]);
   const [hasPreview, setHasPreview] = useState(false);
   // Bilah paket hanya muncul saat halaman PREVIEW tampil (ada elemen .pdf-page)
   useEffect(() => {
@@ -209,15 +227,21 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
           </nav>
         </aside>
 
-        <main className="layout-content">
+        <main
+          className="layout-content"
+          ref={mainRef}
+          onScroll={handleMainScroll}
+        >
           {activeMenu !== 'welcome' && (
             <div className="feature-page-header">
               {current && <img src={asset(current.icon)} alt="" className="feature-page-icon" />}
               <h2 className="feature-page-title">{pageTitle}</h2>
             </div>
           )}
-          <div className="feature-page-content" ref={contentRef}>
-            {children}
+         <div className="feature-page-content" ref={contentRef}>
+            <div key={`${activeMenu}-${currentMode}`} className="page-enter">
+              {children}
+            </div>
             {builder && hasPreview && (
               <BundleBar
                 builderId={builder.id}
@@ -229,12 +253,22 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
             )}
           </div>
         </main>
+
+        <button
+          type="button"
+          className={`scroll-top-btn ${showScrollTop ? 'visible' : ''}`}
+          onClick={scrollToTop}
+          title="Kembali ke atas"
+          aria-label="Kembali ke atas"
+        >
+          ↑
+        </button>
       </div>
 
       <footer className="layout-footer">
         <div className="footer-left">
           © 2026 Telkom Akses | LACT Evidence Builder | Developed by{' '}
-          <span className="text-red">Kerja Praktek</span>
+          <span className="text-red">Telkom Akses</span>
         </div>
         <div className="footer-center"></div>
         <div className="footer-right"></div>
