@@ -37,15 +37,19 @@ const Welcome: React.FC = () => {
         <div className="lw-hero">
           <div className="lw-pill lw-reveal lw-d1">
             <span className="lw-pill-dot" />
-            <span>Telkom Akses • Evidence &amp; Document Builder</span>
+            <span>Telkom Akses • Internal Document Tools</span>
           </div>
 
-          <div className="lw-logo-wrap lw-reveal lw-d2">
+          <div className="lw-verita-hero lw-reveal lw-d2">
             <img
-              src={`${import.meta.env.BASE_URL}images/Logo-TA-New2.png`}
-              alt="Telkom Akses"
-              className="lw-logo"
+              src={`${import.meta.env.BASE_URL}verita-icon.svg`}
+              alt="Logo Verita"
+              className="lw-verita-icon"
             />
+            <div className="lw-verita-text">
+              <span className="lw-verita-name">Verita</span>
+              <span className="lw-verita-sub">Evidence &amp; Document Builder</span>
+            </div>
           </div>
 
           <h1 className="lw-title lw-reveal lw-d3">
