@@ -14,7 +14,7 @@ interface MainLayoutProps {
 interface SubMenu {
   id: string;
   label: string;
-  mode: 'cover' | 'daftar-isi' | 'berita-acara' | 'boq' | `evidence${number}` | 'opm' | 'otdr' | 'mancore' | 'kml' | 'nde' | 'ba-tambah-kurang' | 'ba-abd';
+  mode: 'cover' | 'daftar-isi' | 'berita-acara' | 'boq' | `evidence${number}` | 'opm' | 'otdr' | 'mancore' | 'kml' | 'abd' | 'nde' | 'ba-tambah-kurang' | 'ba-abd';
   href: string;
 }
 
@@ -63,6 +63,7 @@ const menus: MenuItem[] = [
       { id: 'lact-otdr', label: 'Import OTDR', mode: 'otdr', href: '/lact?mode=otdr' },
       { id: 'lact-mancore', label: 'Lampiran Mancore', mode: 'mancore', href: '/lact?mode=mancore' },
       { id: 'lact-kml', label: 'Lampiran KML', mode: 'kml', href: '/lact?mode=kml' },
+      { id: 'lact-abd', label: 'ABD', mode: 'abd', href: '/lact?mode=abd' },
     ],
   },
   {
@@ -81,6 +82,7 @@ const menus: MenuItem[] = [
       { id: 'baut-otdr', label: 'Import OTDR', mode: 'otdr', href: '/baut?mode=otdr' },
       { id: 'baut-mancore', label: 'Lampiran Mancore', mode: 'mancore', href: '/baut?mode=mancore' },
       { id: 'baut-kml', label: 'Lampiran KML', mode: 'kml', href: '/baut?mode=kml' },
+      { id: 'baut-abd', label: 'ABD', mode: 'abd', href: '/baut?mode=abd' },
       { id: 'baut-ba-abd', label: 'BA ABD', mode: 'ba-abd', href: '/baut?mode=ba-abd' },
     ],
   },
@@ -246,7 +248,7 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
                                 }))
                               }
                             >
-                              <span>Lampiran Tambahan (3–12)</span>
+                              <span>Lampiran Tambahan</span>
                               {hasSavedExtra && (
                                 <span
                                   className="sub-menu-saved"
