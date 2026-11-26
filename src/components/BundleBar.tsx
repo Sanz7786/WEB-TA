@@ -102,11 +102,11 @@ export default function BundleBar({ builderId, docType, currentMode, sections, g
     saveSection(builderId, currentMode, pages, readLokasiFromPreview(root));
   };
 
-  const merge = () => {
+  const merge = async () => {
     setStatus('Menggabungkan semua bagian jadi 1 PDF...');
     // Nama ketikan user menang; kalau kosong pakai nama otomatis
     const fileName = `${cleanUserFileName(fileNameInput) || buildAutoName()}.pdf`;
-    const pageCount = mergeBundleToPdf(
+    const pageCount = await mergeBundleToPdf(
       builderId,
       sections.map((s) => s.mode),
       fileName
@@ -244,7 +244,7 @@ export default function BundleBar({ builderId, docType, currentMode, sections, g
           onClick={() =>
             run(async () => {
               await saveCurrent();
-              merge();
+              await merge();
             })
           }
         >
