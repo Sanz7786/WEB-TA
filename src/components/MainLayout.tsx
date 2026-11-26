@@ -268,7 +268,7 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
       <footer className="layout-footer">
         <div className="footer-left">
           © 2026 Telkom Akses | LACT Evidence Builder | Developed by{' '}
-          <span className="text-red">Kerja Praktek</span>
+          <span className="text-red">Telkom Akses</span>
         </div>
         <div className="footer-center"></div>
         <div className="footer-right"></div>
