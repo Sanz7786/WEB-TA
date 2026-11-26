@@ -28,6 +28,25 @@ interface MenuItem {
 
 const asset = (p: string) => `${import.meta.env.BASE_URL}${p}`;
 
+const makeEvidenceMenus = (prefix: 'lact' | 'baut'): SubMenu[] =>
+  Array.from({ length: 12 }, (_, i) => {
+    const num = i + 1;
+    const label =
+      num === 1
+        ? 'Lampiran Evidence Pekerjaan'
+        : num === 2
+        ? 'Lampiran Evidence Hasil Ukur OPM'
+        : `Lampiran Evidence ${num}`;
+    return {
+      id: `${prefix}-evidence-${num}`,
+      label,
+      mode: `evidence${num}` as SubMenu['mode'],
+      href: `/${prefix}?mode=evidence${num}`,
+    };
+  });
+
+const isExtraEvidenceMode = (mode: string) => /^evidence([3-9]|1[0-2])$/.test(mode);
+
 const menus: MenuItem[] = [
   { id: 'welcome', label: 'Welcome', href: '/welcome', icon: 'images/mdi-home-variant1.svg' },
   {
