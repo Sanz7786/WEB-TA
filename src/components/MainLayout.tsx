@@ -155,8 +155,22 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
         <div className="header-brand">
           <img src={asset('images/logo-TA.svg')} alt="Telkom Akses" className="header-logo" />
         </div>
-        <div className="header-status-area">
-          <div className="profile-badge">LACT</div>
+       <div className="header-status-area">
+          <div
+            className="verita-header-brand"
+            onClick={() => navigate('/welcome')}
+            title="Verita — Evidence & Document Builder"
+          >
+            <img
+              src={asset('verita-icon.svg')}
+              alt="Verita"
+              className="verita-header-icon"
+            />
+            <div className="verita-header-text">
+              <span className="verita-wordmark">Verita</span>
+              <span className="verita-tagline">Evidence &amp; Document Builder</span>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -267,7 +281,7 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
 
       <footer className="layout-footer">
         <div className="footer-left">
-          © 2026 Telkom Akses | LACT Evidence Builder | Developed by{' '}
+          © 2026 Telkom Akses | <strong>Verita</strong> — Evidence &amp; Document Builder | Developed by{' '}
           <span className="text-red">Telkom Akses</span>
         </div>
         <div className="footer-center"></div>
