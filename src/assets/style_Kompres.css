@@ -1,0 +1,26 @@
+/* ===== Menu "Kompres Foto" yang berdiri sendiri: tombol unduh & pesan galat ===== */
+/* Gaya dasar kartu foto (.compressor-*) ada di style_Evidence.css. */
+
+.compressor-download-btn {
+  margin-top: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #e30613;
+  background: #fff;
+  border: 1px solid #e30613;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.compressor-download-btn:hover {
+  color: #fff;
+  background: #e30613;
+}
+
+.compressor-error {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: #c0392b;
+}

@@ -14,7 +14,7 @@ interface MainLayoutProps {
 interface SubMenu {
   id: string;
   label: string;
-  mode: 'cover' | 'daftar-isi' | 'berita-acara' | 'boq' | `evidence${number}` | 'opm' | 'otdr' | 'mancore' | 'kml' | 'compress' | 'nde' | 'ba-tambah-kurang' | 'ba-abd'; // dibaca oleh halaman lewat ?mode=...
+  mode: 'cover' | 'daftar-isi' | 'berita-acara' | 'boq' | `evidence${number}` | 'opm' | 'otdr' | 'mancore' | 'kml' | 'nde' | 'ba-tambah-kurang' | 'ba-abd'; // dibaca oleh halaman lewat ?mode=...
   href: string;
 }
 
@@ -65,7 +65,6 @@ const menus: MenuItem[] = [
       // hanya saja TANPA blok tanda tangan (lihat catatan di KmlPage.tsx).
       // Lihat KmlForm.tsx / KmlPage.tsx, dirutekan dari Lact.tsx (mode 'kml').
       { id: 'lact-kml', label: 'Lampiran KML', mode: 'kml', href: '/lact?mode=kml' },
-      { id: 'lact-compress', label: 'Kompres Foto', mode: 'compress', href: '/lact?mode=compress' },
     ],
   },
   {
@@ -99,9 +98,11 @@ const menus: MenuItem[] = [
       { id: 'baut-kml', label: 'Lampiran KML', mode: 'kml', href: '/baut?mode=kml' },
       // KHUSUS BAUT: import PDF, tepat setelah Lampiran KML (mode 'ba-abd').
       { id: 'baut-ba-abd', label: 'BA ABD', mode: 'ba-abd', href: '/baut?mode=ba-abd' },
-      { id: 'baut-compress', label: 'Kompres Foto', mode: 'compress', href: '/baut?mode=compress' },
     ],
   },
+  // Fitur MANDIRI, terpisah dari Tools LACT & Tools BAUT (tidak ikut Paket PDF Lengkap).
+  // Halaman: pages/KompresFoto.tsx, rute '/kompres-foto'.
+  { id: 'kompres-foto', label: 'Kompres Foto', href: '/kompres-foto', icon: 'images/icon-kompres-foto.svg' },
 ];
 
 export default function MainLayout({ children, pageTitle, activeMenu }: MainLayoutProps) {
@@ -113,9 +114,8 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
   // ----- Paket PDF Lengkap (lihat BundleBar.tsx & utils/pdfBundle.ts) -----
   useBundleVersion(); // supaya tanda ✓ di sidebar ikut diperbarui saat isi paket berubah
   const builder = menus.find((m) => m.id === activeMenu && m.children);
-  // Urutan bagian paket = urutan menu (Cover ... Lampiran KML), tanpa "Kompres Foto"
+  // Urutan bagian paket = urutan menu (Cover ... BA ABD)
   const bundleSections = (builder?.children ?? [])
-    .filter((c) => c.mode !== 'compress')
     .map((c) => ({ id: c.id, label: c.label, mode: c.mode as string, href: c.href }));
   const contentRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLElement>(null);
@@ -166,7 +166,7 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
         <aside className="layout-sidebar">
           <nav className="sidebar-nav">
             {menus.map((m) => {
-              // ---------- Menu biasa (Welcome) ----------
+              // ---------- Menu biasa (Welcome, Kompres Foto) ----------
               if (!m.children) {
                 const active = activeMenu === m.id;
                 return (
@@ -210,7 +210,7 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
                           onClick={() => navigate(c.href)}
                         >
                           {c.label}
-                          {c.mode !== 'compress' && isSectionSaved(m.id, c.mode) && (
+                          {isSectionSaved(m.id, c.mode) && (
                             <span
                               className="sub-menu-saved"
                               title="Sudah tersimpan di Paket PDF"
