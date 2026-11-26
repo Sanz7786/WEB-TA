@@ -8,6 +8,7 @@ import {
   registerRawPdfPage,
   unregisterRawPdfPage,
 } from '../utils/pdfBundle';
+import { focusAndShake, showToast } from '../utils/uiFeedback';
 import { useSharedProject } from '../utils/projectStore';
 import '../assets/style_Evidence.css';
 import '../assets/style_ExportOptions.css';
@@ -70,7 +71,7 @@ export default function PdfImportForm({
     const pdfs = fileList.filter(isPdfFile).sort(byName);
     const notPdf = fileList.filter((f) => !isPdfFile(f));
     if (pdfs.length === 0) {
-      alert(`Pilih file PDF ${sectionLabel}. Format lain tidak bisa diimpor di sini.`);
+      showToast(`Pilih file PDF ${sectionLabel}. Format lain tidak bisa diimpor di sini.`, 'error');
       return;
     }
 
@@ -115,6 +116,7 @@ export default function PdfImportForm({
         registerRawPdfPage(it.id, { bytes: it.bytes, pageIndex: it.pageIndex })
       );
       setItems((prev) => [...prev, ...accepted]);
+      showToast(`${accepted.length} halaman ${sectionLabel} berhasil diimpor.`, 'success');
     }
     if (problems.length > 0) alert(`Sebagian file dilewati:\n\n${problems.map((p) => `• ${p}`).join('\n')}`);
   };
@@ -143,7 +145,8 @@ export default function PdfImportForm({
 
   const handlePreview = () => {
     if (items.length === 0) {
-      alert(`Mohon impor file PDF ${sectionLabel} terlebih dahulu.`);
+      showToast(`Mohon impor file PDF ${sectionLabel} terlebih dahulu.`, 'error');
+      focusAndShake(document.querySelector<HTMLElement>('.pdfimp-upload-box'));
       return;
     }
     setMode('preview');
@@ -159,9 +162,10 @@ export default function PdfImportForm({
         items.map((it) => ({ bytes: it.bytes, pageIndex: it.pageIndex })),
         buildPdfFileName({ fileName }, `${docTitle}_${fileTag}_${safeName}`)
       );
+      showToast(`${sectionLabel} ${docTitle} berhasil diunduh.`, 'success');
     } catch (err) {
       console.error(err);
-      alert('Gagal mengekspor PDF asli, coba lagi.');
+      showToast('Gagal mengekspor PDF asli, coba lagi.', 'error');
     } finally {
       setIsProcessing(false);
     }

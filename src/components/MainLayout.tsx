@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import BundleBar from './BundleBar';
+import ToastContainer from './ToastContainer';
 import { isSectionSaved, useBundleVersion } from '../utils/pdfBundle';
 import '../assets/MainLayout.css';
 import '../assets/style_Bundle.css';
 import '../assets/dark-mode.css';
+import '../assets/micro-interactions.css';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -181,7 +183,7 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
             title={theme === 'dark' ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'}
             aria-label={theme === 'dark' ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'}
           >
-            <span className="theme-switch-icon" aria-hidden="true">
+            <span key={theme} className="theme-switch-icon" aria-hidden="true">
               {theme === 'dark' ? '☀️' : '🌙'}
             </span>
             <span className="theme-switch-label">
@@ -392,6 +394,7 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
         <div className="footer-center"></div>
         <div className="footer-right"></div>
       </footer>
+      <ToastContainer />
     </div>
   );
 }

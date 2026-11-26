@@ -15,6 +15,7 @@ import {
   setBundleName,
   useBundleVersion,
 } from '../utils/pdfBundle';
+import { showToast } from '../utils/uiFeedback';
 
 export interface BundleSection {
   id: string;
@@ -100,6 +101,7 @@ export default function BundleBar({ builderId, docType, currentMode, sections, g
       setStatus(`Menyimpan "${current.label}": halaman ${done} dari ${total}...`)
     );
     saveSection(builderId, currentMode, pages, readLokasiFromPreview(root));
+    showToast(`"${current.label}" tersimpan ke Paket PDF.`, 'success');
   };
 
   const merge = async () => {
@@ -112,6 +114,7 @@ export default function BundleBar({ builderId, docType, currentMode, sections, g
       fileName
     );
     setInfo(`Terunduh: ${fileName} (${pageCount} halaman)`);
+    showToast(`Paket PDF diunduh (${pageCount} halaman).`, 'success');
   };
 
   const run = async (action: () => Promise<void> | void) => {
@@ -122,7 +125,7 @@ export default function BundleBar({ builderId, docType, currentMode, sections, g
       await action();
     } catch (err) {
       console.error(err);
-      alert('Gagal memproses paket PDF, coba lagi.');
+      showToast('Gagal memproses paket PDF, coba lagi.', 'error');
     } finally {
       setBusy(false);
       setStatus('');
