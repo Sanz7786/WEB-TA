@@ -722,3 +722,74 @@ html,
 .lw-pill-dot {
   background: #E30613;
 }
+
+/* ========================================================
+   RESPONSIVE VERITA BRANDING & WELCOME (<= 768px)
+   ======================================================== */
+@media (max-width: 768px) {
+  /* Ringkaskan header kanan Verita di layar HP */
+  .verita-header-brand {
+    padding: 4px 6px;
+    gap: 8px;
+  }
+
+  .verita-header-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+
+  .verita-wordmark {
+    font-size: 16px;
+  }
+
+  .verita-tagline {
+    display: none; /* sembunyikan subjudul di HP agar header tidak sesak */
+  }
+
+  /* Halaman Welcome 1 kolom rapi */
+  .lw-wrapper {
+    overflow: visible;
+    padding: 12px 4px;
+  }
+
+  .lw-verita-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+  }
+
+  .lw-verita-name {
+    font-size: 26px;
+  }
+
+  .lw-verita-sub {
+    font-size: 11px;
+  }
+
+  .lw-title {
+    font-size: 24px;
+    line-height: 1.25;
+  }
+
+  .lw-desc {
+    font-size: 13.5px;
+  }
+
+  .lw-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .lw-actions button,
+  .lw-actions a {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .lw-cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}

@@ -39,31 +39,15 @@ const menus: MenuItem[] = [
       { id: 'lact-daftar-isi', label: 'Daftar Isi', mode: 'daftar-isi', href: '/lact?mode=daftar-isi' },
       { id: 'lact-berita-acara', label: 'Laporan Commisioning Test', mode: 'berita-acara', href: '/lact?mode=berita-acara' },
       { id: 'lact-boq', label: 'BOQ', mode: 'boq', href: '/lact?mode=boq' },
-      // 10 fitur INDEPENDEN: masing-masing punya daftar foto & keterangan sendiri,
-      // tidak saling berbagi data walau tampilan/caranya sama persis.
-      // Evidence 4 menggantikan "Upload Sekaligus" versi lama (nama diganti saja).
       ...Array.from({ length: 12 }, (_, i) => ({
         id: `lact-evidence-${i + 1}`,
         label: `Lampiran Evidence ${i + 1}`,
         mode: `evidence${i + 1}` as SubMenu['mode'],
         href: `/lact?mode=evidence${i + 1}`,
       })),
-      // Halaman tersendiri (header + judul + tabel info proyek + satu gambar
-      // data pengukuran OPM + blok tanda tangan), polanya sama seperti BOQ.
-      // Lihat OpmForm.tsx / OpmPage.tsx, dirutekan dari Lact.tsx (mode 'opm').
       { id: 'lact-opm', label: 'Data Pengukuran OPM', mode: 'opm', href: '/lact?mode=opm' },
-      // Import OTDR: halaman tersendiri, polanya sama seperti Data Pengukuran OPM
-      // (kop + judul + tabel info + gambar hasil ukur + blok tanda tangan), tapi
-      // boleh banyak gambar (satu gambar = satu halaman).
-      // Lihat OtdrForm.tsx / OtdrPage.tsx, dirutekan dari Lact.tsx (mode 'otdr').
       { id: 'lact-otdr', label: 'Import OTDR', mode: 'otdr', href: '/lact?mode=otdr' },
-      // Halaman tersendiri juga, polanya sama seperti BOQ & Data Pengukuran
-      // OPM. Lihat MancoreForm.tsx / MancorePage.tsx, dirutekan dari Lact.tsx
-      // (mode 'mancore').
       { id: 'lact-mancore', label: 'Lampiran Mancore', mode: 'mancore', href: '/lact?mode=mancore' },
-      // Halaman tersendiri juga, polanya sama seperti BOQ/OPM/Mancore,
-      // hanya saja TANPA blok tanda tangan (lihat catatan di KmlPage.tsx).
-      // Lihat KmlForm.tsx / KmlPage.tsx, dirutekan dari Lact.tsx (mode 'kml').
       { id: 'lact-kml', label: 'Lampiran KML', mode: 'kml', href: '/lact?mode=kml' },
     ],
   },
@@ -73,14 +57,10 @@ const menus: MenuItem[] = [
     icon: 'images/audit.png',
     children: [
       { id: 'baut-cover', label: 'Cover', mode: 'cover', href: '/baut?mode=cover' },
-      // KHUSUS BAUT (tidak ada di Tools LACT): import file PDF jadi, dimasukkan apa adanya.
-      // Posisi di daftar ini = urutan di Paket PDF Lengkap. Lihat PdfImportForm.tsx,
-      // dirutekan dari BuatBaut.tsx (mode 'nde').
       { id: 'baut-nde', label: 'NDE', mode: 'nde', href: '/baut?mode=nde' },
       { id: 'baut-daftar-isi', label: 'Daftar Isi', mode: 'daftar-isi', href: '/baut?mode=daftar-isi' },
       { id: 'baut-berita-acara', label: 'Berita Acara Uji Terima', mode: 'berita-acara', href: '/baut?mode=berita-acara' },
       { id: 'baut-boq', label: 'BOQ', mode: 'boq', href: '/baut?mode=boq' },
-      // KHUSUS BAUT: import PDF, tepat setelah BOQ (mode 'ba-tambah-kurang').
       { id: 'baut-ba-tambah-kurang', label: 'BA Tambah Kurang', mode: 'ba-tambah-kurang', href: '/baut?mode=ba-tambah-kurang' },
       ...Array.from({ length: 12 }, (_, i) => ({
         id: `baut-evidence-${i + 1}`,
@@ -88,20 +68,13 @@ const menus: MenuItem[] = [
         mode: `evidence${i + 1}` as SubMenu['mode'],
         href: `/baut?mode=evidence${i + 1}`,
       })),
-      // Sama seperti di Tools LACT: halaman tersendiri, lihat OpmForm.tsx.
       { id: 'baut-opm', label: 'Data Pengukuran OPM', mode: 'opm', href: '/baut?mode=opm' },
-      // Sama seperti di Tools LACT: halaman tersendiri, lihat OtdrForm.tsx.
       { id: 'baut-otdr', label: 'Import OTDR', mode: 'otdr', href: '/baut?mode=otdr' },
-      // Sama seperti di Tools LACT: halaman tersendiri, lihat MancoreForm.tsx.
       { id: 'baut-mancore', label: 'Lampiran Mancore', mode: 'mancore', href: '/baut?mode=mancore' },
-      // Sama seperti di Tools LACT: halaman tersendiri, lihat KmlForm.tsx.
       { id: 'baut-kml', label: 'Lampiran KML', mode: 'kml', href: '/baut?mode=kml' },
-      // KHUSUS BAUT: import PDF, tepat setelah Lampiran KML (mode 'ba-abd').
       { id: 'baut-ba-abd', label: 'BA ABD', mode: 'ba-abd', href: '/baut?mode=ba-abd' },
     ],
   },
-  // Fitur MANDIRI, terpisah dari Tools LACT & Tools BAUT (tidak ikut Paket PDF Lengkap).
-  // Halaman: pages/KompresFoto.tsx, rute '/kompres-foto'.
   { id: 'kompres-foto', label: 'Kompres Foto', href: '/kompres-foto', icon: 'images/icon-kompres-foto.svg' },
 ];
 
@@ -112,14 +85,16 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
   const current = menus.find((m) => m.id === activeMenu);
 
   // ----- Paket PDF Lengkap (lihat BundleBar.tsx & utils/pdfBundle.ts) -----
-  useBundleVersion(); // supaya tanda ✓ di sidebar ikut diperbarui saat isi paket berubah
+  useBundleVersion();
   const builder = menus.find((m) => m.id === activeMenu && m.children);
-  // Urutan bagian paket = urutan menu (Cover ... BA ABD)
   const bundleSections = (builder?.children ?? [])
     .map((c) => ({ id: c.id, label: c.label, mode: c.mode as string, href: c.href }));
   const contentRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // State drawer sidebar khusus tampilan mobile/Android
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleMainScroll = () => {
     const el = mainRef.current;
@@ -131,13 +106,14 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
     mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Kembalikan scroll ke atas otomatis saat pindah menu/mode
+  // Kembalikan scroll ke atas & tutup drawer otomatis saat pindah menu/mode
   useEffect(() => {
     mainRef.current?.scrollTo({ top: 0, behavior: 'instant' });
     setShowScrollTop(false);
+    setMobileMenuOpen(false);
   }, [activeMenu, currentMode]);
+
   const [hasPreview, setHasPreview] = useState(false);
-  // Bilah paket hanya muncul saat halaman PREVIEW tampil (ada elemen .pdf-page)
   useEffect(() => {
     const has = !!contentRef.current?.querySelector('.pdf-page');
     setHasPreview((prev) => (prev === has ? prev : has));
@@ -153,9 +129,17 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
     <div className="layout-wrapper">
       <header className="layout-header">
         <div className="header-brand">
+          <button
+            type="button"
+            className="mobile-menu-btn"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            aria-label="Buka menu navigasi"
+          >
+            {mobileMenuOpen ? '✕' : '☰'}
+          </button>
           <img src={asset('images/logo-TA.svg')} alt="Telkom Akses" className="header-logo" />
         </div>
-       <div className="header-status-area">
+        <div className="header-status-area">
           <div
             className="verita-header-brand"
             onClick={() => navigate('/welcome')}
@@ -177,7 +161,12 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
       <div className="layout-body">
         <img className="body-bg-map" src={asset('images/peta-dunia.png')} alt="Peta" />
 
-        <aside className="layout-sidebar">
+        <div
+          className={`sidebar-backdrop ${mobileMenuOpen ? 'open' : ''}`}
+          onClick={() => setMobileMenuOpen(false)}
+        />
+
+        <aside className={`layout-sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}>
           <nav className="sidebar-nav">
             {menus.map((m) => {
               // ---------- Menu biasa (Welcome, Kompres Foto) ----------
@@ -187,7 +176,10 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
                   <div
                     key={m.id}
                     className={`nav-item ${active ? 'active' : ''}`}
-                    onClick={() => m.href && navigate(m.href)}
+                    onClick={() => {
+                      if (m.href) navigate(m.href);
+                      setMobileMenuOpen(false);
+                    }}
                   >
                     <img
                       src={asset(m.icon)}
@@ -221,7 +213,10 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
                         <div
                           key={c.id}
                           className={`sub-menu-item ${subActive ? 'active' : ''}`}
-                          onClick={() => navigate(c.href)}
+                          onClick={() => {
+                            navigate(c.href);
+                            setMobileMenuOpen(false);
+                          }}
                         >
                           {c.label}
                           {isSectionSaved(m.id, c.mode) && (
@@ -252,7 +247,7 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
               <h2 className="feature-page-title">{pageTitle}</h2>
             </div>
           )}
-         <div className="feature-page-content" ref={contentRef}>
+          <div className="feature-page-content" ref={contentRef}>
             <div key={`${activeMenu}-${currentMode}`} className="page-enter">
               {children}
             </div>
