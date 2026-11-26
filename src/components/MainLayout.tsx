@@ -246,7 +246,7 @@ export default function MainLayout({ children, pageTitle, activeMenu }: MainLayo
                                 }))
                               }
                             >
-                              <span>Lampiran Tambahan (3–12)</span>
+                              <span>Lampiran Tambahan</span>
                               {hasSavedExtra && (
                                 <span
                                   className="sub-menu-saved"
