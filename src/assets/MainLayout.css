@@ -1,4 +1,4 @@
-g/* =========================================================
+/* =========================================================
    PALET WARNA TELKOM (ubah di sini, semua komponen ikut berubah)
    ========================================================= */
 :root {
@@ -21,7 +21,8 @@ g/* =========================================================
 .layout-wrapper {
   display: flex;
   flex-direction: column;
-  height: 100dvh; width: 100%;
+  height: 100dvh;
+  width: 100%;
   font-family: "Poppins", "Inter", sans-serif;
   color: var(--ta-text);
   background-color: #ffffff;
@@ -38,7 +39,7 @@ g/* =========================================================
   box-shadow: 0 2px 14px rgba(0, 0, 0, 0.10);
 
   display: flex;
-  justify-content: space-between; /* logo di kiri, badge LACT di kanan */
+  justify-content: space-between;
   align-items: center;
   padding: 0 40px;
   position: relative;
@@ -124,6 +125,7 @@ g/* =========================================================
 /* === SIDEBAR (kaca putih semi-transparan) === */
 .layout-sidebar {
   width: 280px;
+  flex-shrink: 0;
   padding: 26px 18px;
   position: relative;
   z-index: 1;
@@ -190,7 +192,6 @@ g/* =========================================================
 /* =========================================
    GAYA DROPDOWN SUB-MENU GIS TOOLS
    ========================================= */
-
 .nav-item.active-parent {
   color: var(--ta-red);
   font-weight: 700;
@@ -212,8 +213,6 @@ g/* =========================================================
 }
 
 .sub-menu-container.open {
-  /* Dinaikkan karena sekarang ada 14 item per Tools (Cover s.d Kompres Foto).
-     Dibuat jauh lebih longgar supaya aman kalau item ditambah lagi nanti. */
   max-height: 3000px;
   opacity: 1;
   margin-bottom: 10px;
@@ -257,6 +256,7 @@ g/* =========================================================
 /* === KONTEN KANAN (kaca putih semi-transparan) === */
 .layout-content {
   flex: 1;
+  min-width: 0;
   position: relative;
   z-index: 1;
 
@@ -356,7 +356,6 @@ g/* =========================================================
   color: #c9c9c9;
 }
 
-/* Merah khusus KERJA PRAKTEK */
 .text-red {
   color: var(--ta-red);
   font-weight: 700;
@@ -424,7 +423,6 @@ g/* =========================================================
     flex-shrink: 0;
   }
 
-  /* Body & konten mengisi 100% lebar layar HP */
   .layout-body {
     padding: 12px;
     gap: 0;
@@ -435,10 +433,9 @@ g/* =========================================================
     min-width: 0;
     padding: 16px 14px;
     border-radius: 14px;
-    overflow-x: auto; /* aman untuk preview A4 & tabel lebar */
+    overflow-x: auto;
   }
 
-  /* Sidebar berubah menjadi Drawer geser dari kiri */
   .layout-sidebar {
     position: fixed;
     top: 0;
@@ -458,7 +455,6 @@ g/* =========================================================
     transform: translateX(0);
   }
 
-  /* Layar gelap tipis di belakang drawer saat terbuka */
   .sidebar-backdrop.open {
     display: block;
     position: fixed;
