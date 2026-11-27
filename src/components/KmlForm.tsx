@@ -40,6 +40,7 @@ export default function KmlForm({ docTitle, pageTitle, activeMenu, defaultDocHea
 
   const [kmlImageFile, setKmlImageFile] = useState<File | null>(null);
   const [kmlImagePreview, setKmlImagePreview] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const [mode, setMode] = useState<'form' | 'preview'>('form');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -53,6 +54,10 @@ export default function KmlForm({ docTitle, pageTitle, activeMenu, defaultDocHea
 
   const handleKmlImageChange = async (file: File | null) => {
     if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showToast('Pilih file gambar (JPG atau PNG).', 'error');
+      return;
+    }
     try {
       const preview = await compressImage(file);
       setKmlImageFile(file);
@@ -213,13 +218,29 @@ export default function KmlForm({ docTitle, pageTitle, activeMenu, defaultDocHea
           <label htmlFor="kml-image-upload">
             Gambar Lampiran KML (screenshot Google Earth: jalur kabel, titik ODC/ODP, kotak pengukuran jarak)
           </label>
-          <label htmlFor="kml-image-upload" className="kml-image-upload-box">
+          <label
+            htmlFor="kml-image-upload"
+            className={`kml-image-upload-box${isDragging ? ' dragging' : ''}`}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setIsDragging(true);
+            }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDragging(false);
+              const file = e.dataTransfer.files?.[0] ?? null;
+              handleKmlImageChange(file);
+            }}
+          >
             {kmlImagePreview ? (
               <img src={kmlImagePreview} alt="Pratinjau lampiran KML" />
             ) : (
               <>
                 <span className="evidence-upload-icon">⬆</span>
-                <span className="evidence-upload-text">Unggah gambar lampiran KML disini</span>
+                <span className="evidence-upload-text">
+                  Klik untuk unggah gambar lampiran KML, atau seret dan lepas ke sini
+                </span>
               </>
             )}
           </label>

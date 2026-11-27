@@ -162,23 +162,32 @@
    4. DROPZONE LEBIH HIDUP & FADE-UP THUMBNAIL
    ========================================================= */
 .evidence-bulk-icon,
-.evidence-upload-icon {
+.evidence-upload-icon,
+.xdoc-dropzone-icon {
   display: inline-block;
   transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .evidence-bulk-dropzone.dragging,
-.pdfimp-upload-box.dragging {
+.pdfimp-upload-box.dragging,
+.otdr-upload-box.dragging,
+.kml-image-upload-box.dragging,
+.xdoc-dropzone.dragging {
+  border-color: #e30613 !important;
   box-shadow: 0 0 0 4px rgba(227, 6, 19, 0.14);
 }
 
 .evidence-bulk-dropzone.dragging .evidence-bulk-icon,
-.pdfimp-upload-box.dragging .evidence-upload-icon {
+.pdfimp-upload-box.dragging .evidence-upload-icon,
+.otdr-upload-box.dragging .evidence-upload-icon,
+.kml-image-upload-box.dragging .evidence-upload-icon,
+.xdoc-dropzone.dragging .xdoc-dropzone-icon {
   transform: translateY(-4px) scale(1.1);
 }
 
 .evidence-bulk-card,
-.pdfimp-thumb {
+.pdfimp-thumb,
+.otdr-thumb {
   animation: ui-fade-up 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 

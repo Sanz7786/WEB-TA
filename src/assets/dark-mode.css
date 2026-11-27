@@ -400,6 +400,136 @@
   background-clip: text !important;
   color: transparent !important;
 }
+/* --- Penyempurnaan Dark Mode Linear untuk BundleBar (Paket PDF Lengkap) --- */
+[data-theme="dark"] .bundle-bar-header,
+[data-theme="dark"] .bundle-bar-settings,
+[data-theme="dark"] .bundle-bar-actions {
+  border-color: var(--ln-border) !important;
+}
+
+[data-theme="dark"] .bundle-bar-count {
+  background: rgba(227, 6, 19, 0.14) !important;
+  color: #ff6b72 !important;
+  border: 1px solid rgba(227, 6, 19, 0.28) !important;
+}
+
+[data-theme="dark"] .bundle-bar-saved {
+  background: var(--ln-input) !important;
+  border: 1px solid var(--ln-border) !important;
+}
+
+[data-theme="dark"] .bundle-chip-pages {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #d0d4dc !important;
+}
+
+[data-theme="dark"] .bundle-chip-remove {
+  color: var(--ln-muted) !important;
+}
+
+[data-theme="dark"] .bundle-chip-remove:hover:not(:disabled) {
+  background: rgba(227, 6, 19, 0.22) !important;
+  color: #ff6b72 !important;
+}
+
+[data-theme="dark"] .bundle-input-wrap {
+  background: var(--ln-input) !important;
+  border-color: var(--ln-border-strong) !important;
+}
+
+[data-theme="dark"] .bundle-input,
+[data-theme="dark"] .bundle-select {
+  border-color: var(--ln-border-strong) !important;
+}
+
+[data-theme="dark"] .bundle-input-suffix {
+  background: #1b1d23 !important;
+  color: var(--ln-muted) !important;
+  border-color: var(--ln-border) !important;
+}
+
+[data-theme="dark"] .bundle-btn-secondary {
+  background: rgba(227, 6, 19, 0.12) !important;
+  color: #ff6b72 !important;
+  border: 1px solid rgba(227, 6, 19, 0.4) !important;
+}
+
+[data-theme="dark"] .bundle-btn-secondary:hover:not(:disabled) {
+  background: rgba(227, 6, 19, 0.22) !important;
+  border-color: rgba(227, 6, 19, 0.65) !important;
+  color: #ff8a90 !important;
+}
+
+[data-theme="dark"] .bundle-btn-neutral {
+  background: #1b1d23 !important;
+  color: #e4e6eb !important;
+  border: 1px solid var(--ln-border-strong) !important;
+}
+
+[data-theme="dark"] .bundle-btn-neutral:hover:not(:disabled) {
+  background: #242730 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .bundle-btn-ghost:hover:not(:disabled) {
+  background: rgba(227, 6, 19, 0.14) !important;
+  color: #ff6b72 !important;
+}
+
+[data-theme="dark"] .bundle-bar-status,
+[data-theme="dark"] .bundle-bar-info {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: #e4e6eb !important;
+  border-color: var(--ln-border) !important;
+}
+/* --- Penyempurnaan Dark Mode Linear untuk Thumbnail & Toolbar Import OTDR --- */
+[data-theme="dark"] .otdr-toolbar {
+  color: var(--ln-muted) !important;
+}
+
+[data-theme="dark"] .otdr-clear {
+  background: #1b1d23 !important;
+  color: #e4e6eb !important;
+  border: 1px solid var(--ln-border-strong) !important;
+}
+
+[data-theme="dark"] .otdr-clear:hover {
+  background: #242730 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .otdr-thumb {
+  background: var(--ln-card) !important;
+  color: var(--ln-text) !important;
+  border: 1px solid var(--ln-border) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-theme="dark"] .otdr-thumb img {
+  background: var(--ln-input) !important;
+}
+
+[data-theme="dark"] .otdr-thumb-name {
+  color: var(--ln-muted) !important;
+}
+
+[data-theme="dark"] .otdr-thumb-btn,
+[data-theme="dark"] .otdr-thumb-btn.remove {
+  background: #1b1d23 !important;
+  color: #e4e6eb !important;
+  border: 1px solid var(--ln-border-strong) !important;
+}
+
+[data-theme="dark"] .otdr-thumb-btn:hover:not(:disabled) {
+  background: #242730 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .otdr-thumb-btn.remove:hover:not(:disabled) {
+  background: #e30613 !important;
+  border-color: #e30613 !important;
+  color: #ffffff !important;
+}
 /* --- PENGAMAN: Kertas preview & cetak PDF wajib tetap putih --- */
 [data-theme="dark"] .pdf-page {
   background: #ffffff;

@@ -104,6 +104,7 @@ export default function ExcelDocForm({
   const [importLoading, setImportLoading] = useState(false);
   const [importError, setImportError] = useState('');
   const [image, setImage] = useState<{ file: File; preview: string } | null>(null);
+  const [isImageDragging, setIsImageDragging] = useState(false);
 
   const [showSign, setShowSign] = useState(defaultShowSign);
   const [tanggalISO, setTanggalISO] = useState('');
@@ -211,6 +212,10 @@ export default function ExcelDocForm({
   // ---------- Gambar (cadangan) ----------
   const handleImageChange = async (file: File | null) => {
     if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showToast('Pilih file gambar (JPG atau PNG).', 'error');
+      return;
+    }
     if (file.size > MAX_ORIGINAL_BYTES) {
       showToast(
         `Gambar ${file.name} (${formatBytes(file.size)}) lebih dari ${MAX_ORIGINAL_MB} MB. Kompres dulu lewat menu Kompres Foto.`,
@@ -481,13 +486,29 @@ export default function ExcelDocForm({
             />
           ) : (
             <div className="xdoc-import">
-              <label htmlFor={`${inputId}-img`} className="xdoc-dropzone">
+              <label
+                htmlFor={`${inputId}-img`}
+                className={`xdoc-dropzone${isImageDragging ? ' dragging' : ''}`}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsImageDragging(true);
+                }}
+                onDragLeave={() => setIsImageDragging(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setIsImageDragging(false);
+                  const f = e.dataTransfer.files?.[0] ?? null;
+                  handleImageChange(f);
+                }}
+              >
                 {image ? (
                   <img src={image.preview} alt={info.fileTag} className="xdoc-image-preview" />
                 ) : (
                   <>
                     <span className="xdoc-dropzone-icon">⬆</span>
-                    <span className="xdoc-dropzone-title">{info.imagePrompt}</span>
+                    <span className="xdoc-dropzone-title">
+                      {info.imagePrompt} (klik atau seret dan lepas ke sini)
+                    </span>
                   </>
                 )}
               </label>
