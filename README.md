@@ -59,7 +59,7 @@ Pastikan **Node.js (LTS)** dan **Git** sudah terpasang di perangkat.
 
 ```bash
 # 1. Clone repositori
-git clone <URL_REPOSITORI_GITHUB_KAMU>
+git clone https://github.com/Sanz7786/WEB-TA
 cd WEB-TA
 
 # 2. Pasang dependensi
